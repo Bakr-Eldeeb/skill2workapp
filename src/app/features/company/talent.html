@@ -1,0 +1,113 @@
+<s2w-header
+  title="Find candidates"
+  [subtitle]="
+    recommended
+      ? 'Only candidates with every Must-Have evaluated and meeting each minimum are recommended.'
+      : 'All candidates'
+  "
+/>
+<div class="view-switch" role="group" [attr.aria-label]="'Candidate view' | t">
+  <button
+    type="button"
+    [class.selected]="!recommended"
+    [attr.aria-pressed]="!recommended"
+    (click)="setView(false)"
+  >
+    {{ 'All candidates' | t }}
+  </button>
+  <button
+    type="button"
+    [class.selected]="recommended"
+    [attr.aria-pressed]="recommended"
+    (click)="setView(true)"
+  >
+    {{ 'Recommended for a job' | t }}
+  </button>
+</div>
+<div class="filters">
+  @if (recommended) {
+    <label
+      >{{ 'Select job' | t
+      }}<select [(ngModel)]="selectedJob">
+        <option value="">{{ job?.title ?? ('Select job' | t) }}</option>
+        @for (j of jobs; track j.id) {
+          <option [value]="j.id">{{ j.title }}</option>
+        }
+      </select></label
+    >
+  }
+  <label class="search">{{ 'Search' | t }}<input [(ngModel)]="search" /></label
+  ><label>{{ 'My skills' | t }}<input [(ngModel)]="skill" placeholder="Angular…" /></label
+  ><label>{{ 'Location' | t }}<input [(ngModel)]="location" /></label
+  ><label
+    >{{ 'Career track' | t
+    }}<select [(ngModel)]="track">
+      <option value="">{{ 'All candidates' | t }}</option>
+      @for (t of ['Frontend Development', 'Backend Development', 'Product Design']; track t) {
+        <option>{{ t }}</option>
+      }
+    </select></label
+  >
+  @if (!recommended) {
+    <label
+      >{{ 'All evidence' | t
+      }}<select [(ngModel)]="filter">
+        <option value="">{{ 'All evidence' | t }}</option>
+        <option value="assessed">{{ 'Assessed' | t }}</option>
+        <option value="claimed">{{ 'Claimed' | t }}</option>
+      </select></label
+    >
+  }
+</div>
+<p class="muted">
+  {{ candidates.length }} {{ (recommended ? 'Eligible candidates' : 'Candidates found') | t }}
+</p>
+<div class="grid">
+  @for (c of candidates; track c.id) {
+    <article class="card">
+      <div class="row">
+        <div class="actions">
+          <span class="avatar">{{ c.name.slice(0, 1) }}</span>
+          <div>
+            <h3>{{ c.name }}</h3>
+            <p class="muted">{{ c.track }} · {{ c.location }}</p>
+          </div>
+        </div>
+        @if (recommended && job) {
+          <s2w-score [value]="s.score(c, job)" [coverage]="s.coverage(c, job)" />
+        }
+      </div>
+      <div class="chips spaced">
+        @for (skill of c.skills; track skill.name) {
+          <span [class.verified]="skill.score !== undefined"
+            >{{ skill.name }} · {{ skill.score ?? ('Claimed' | t) }}</span
+          >
+        }
+      </div>
+      <div class="row spaced">
+        <span class="muted">{{ 'Practice assessment' | t }}</span><a
+          class="text-link"
+          [routerLink]="['/company/candidates', c.id]"
+          >{{ 'View candidate' | t }} ↗</a
+        >
+      </div>
+    </article>
+  } @empty {
+    <s2w-empty
+      [text]="recommended ? 'No eligible candidates yet.' : 'No matching results.'"
+      [description]="
+        recommended
+          ? 'Recommendations need every Must-Have assessed and above its minimum. You can still discover all candidates.'
+          : 'Try a broader search. Your next teammate may describe their skills differently.'
+      "
+    >
+      @if (recommended) {
+        <button class="secondary" (click)="resetFilters(); setView(false)">
+          {{ 'All candidates' | t }}
+        </button>
+      } @else {
+        <button class="secondary" (click)="resetFilters()">{{ 'Clear filters' | t }}</button>
+      }
+    </s2w-empty>
+  }
+</div>

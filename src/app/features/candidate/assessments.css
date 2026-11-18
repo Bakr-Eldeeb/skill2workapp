@@ -1,0 +1,38 @@
+.assessment-live {
+  max-width: 850px;
+  margin: 30px auto;
+}
+.question {
+  font-size: 22px;
+  line-height: 1.6;
+  margin-block: 30px;
+}
+.timer {
+  background: #ffaf8c33;
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  padding: 15px;
+  border-radius: 9px;
+  margin-top: 12px;
+  cursor: pointer;
+}
+.option:has(input:checked) {
+  border-color: var(--primary);
+  background: var(--soft);
+}
+fieldset {
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+.assessment-live form {
+  gap: 25px;
+}

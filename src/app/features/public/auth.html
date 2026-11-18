@@ -1,0 +1,112 @@
+<main class="auth-layout">
+  <section class="auth-story">
+    <a routerLink="/"><s2w-logo /></a>
+    <div class="story">
+      <span class="badge mint">{{ 'Prove Skills. Find Work.' | t }}</span>
+      <h2 class="spaced">{{ 'Build your next chapter.' | t }}</h2>
+      <p>
+        {{
+          'Turn the skills you claim into evidence you can explain. Discover opportunities that fit what you know, and see what to work on next.'
+            | t
+        }}
+      </p>
+      <div class="card">
+        <span class="step-number">01 → 02 → 03</span>
+        <h3>{{ 'Claim your skills' | t }} · {{ 'Build your passport' | t }}</h3>
+      </div>
+    </div>
+  </section>
+  <section class="auth-form">
+    <div class="auth-panel">
+      <a class="auth-back text-link" routerLink="/">← {{ 'Back to home' | t }}</a>
+      <div class="auth-brand">
+        <a routerLink="/"><s2w-logo /></a>
+      </div>
+      <div class="row">
+        <p class="eyebrow">{{ 'Welcome back' | t }}</p>
+        <div>
+          <button class="quiet" (click)="p.toggleLanguage()">
+            {{ p.language() === 'en' ? 'عربي' : 'English' }}</button><button
+            class="icon-button"
+            aria-label="Toggle theme"
+            (click)="p.toggleTheme()"
+          >
+            ☾
+          </button>
+        </div>
+      </div>
+      <h1>{{ (signing ? 'Create account' : 'Welcome back') | t }}</h1>
+      <a class="small text-link" routerLink="/technology">{{ 'About the technology' | t }}</a>
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        @if (signing) {
+          <label
+            >{{ (company ? 'Company name' : 'Name') | t
+            }}<input formControlName="name" autocomplete="name" required
+          /></label>
+        }
+        <label
+          >{{ 'Email' | t
+          }}<input type="email" formControlName="email" autocomplete="email" required /></label
+        ><label
+          >{{ 'Password' | t
+          }}<input
+            type="password"
+            formControlName="password"
+            [attr.autocomplete]="signing ? 'new-password' : 'current-password'"
+            required
+            minlength="8"
+        /></label>
+        @if (signing) {
+          <label
+            >{{ 'Confirm password' | t
+            }}<input
+              type="password"
+              formControlName="confirmation"
+              autocomplete="new-password"
+              required
+          /></label>
+          @if (!company) {
+            <div class="fields">
+              <label
+                >{{ 'University' | t
+                }}<select formControlName="universityId" required>
+                  <option value="">{{ 'Choose university' | t }}</option>
+                  @for (u of s.state().universities; track u.id) {
+                    <option [value]="u.id">{{ u.name }}</option>
+                  }
+                </select></label
+              ><label
+                >{{ 'Career track' | t
+                }}<select formControlName="track">
+                  @for (
+                    track of ['Frontend Development', 'Backend Development', 'Product Design'];
+                    track track
+                  ) {
+                    <option>{{ track }}</option>
+                  }
+                </select></label
+              >
+            </div>
+            <p class="form-help">
+              {{ 'University selection is self-reported, not enrollment-verified.' | t }}
+            </p>
+          }
+        }
+        @if (error) {
+          <div class="error" role="alert">{{ error | t }}</div>
+        }
+        <button class="primary" type="submit">
+          {{ (signing ? 'Create account' : 'Sign in') | t }} ↗
+        </button>
+      </form>
+      <div class="auth-links">
+        @if (signing) {
+          <a routerLink="/sign-in">{{ 'Sign in' | t }}</a>
+        } @else {
+          <a routerLink="/sign-up">{{ 'For candidates' | t }} · {{ 'Sign up' | t }}</a
+          ><a routerLink="/company-sign-up">{{ 'For companies' | t }} · {{ 'Sign up' | t }}</a>
+        }
+      </div>
+    </div>
+  </section>
+</main>

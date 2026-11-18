@@ -1,0 +1,71 @@
+<section class="match-explainer" aria-labelledby="explain-match-title">
+  <div class="match-intro">
+    <div>
+      <p class="eyebrow">{{ 'Evidence, made understandable' | t }}</p>
+      <h2 id="explain-match-title">{{ 'Explain my match' | t }}</h2>
+      <p>
+        {{
+          'Required Skill Evidence Score is the average evidence across all Must-Haves. Missing assessment contributes no evidence, not zero ability.'
+            | t
+        }}
+      </p>
+    </div>
+    <div>
+      <s2w-score [value]="score()" />
+      <p>
+        {{ coverage().assessed }} {{ 'of' | t }} {{ coverage().total }}
+        {{ 'Must-Haves assessed' | t }}
+      </p>
+    </div>
+  </div>
+  <div class="eligibility-note" [class.meets]="eligible()">
+    <span aria-hidden="true">{{ eligible() ? '✓' : '◇' }}</span>
+    <div>
+      <strong>{{ eligibilityText() | t }}</strong>
+      <p>{{ 'Eligibility is separate from the evidence score. You can apply either way.' | t }}</p>
+    </div>
+  </div>
+  @for (must of [true, false]; track must) {
+    <h3 class="spaced">{{ (must ? 'Must-Have' : 'Nice-to-Have') | t }}</h3>
+    <div class="match-requirements">
+      @for (r of requirements(must); track r.name) {
+        <article class="requirement-evidence" [attr.data-evidence]="state(r)">
+          <div class="requirement-title">
+            <span class="evidence-symbol">{{ evidence(r)?.score !== undefined ? '✓' : '○' }}</span>
+            <h3>{{ r.name }}</h3>
+            <span class="evidence-state">{{ state(r) | t }}</span>
+          </div>
+          <div class="requirement-detail">
+            <div>
+              <strong
+                >{{ evidence(r)?.score ?? ('Not assessed' | t)
+                }}<small>{{ evidence(r)?.score !== undefined ? '/100' : '' }}</small></strong
+              ><span>{{ 'Actual assessed score' | t }}</span>
+            </div>
+            @if (r.must) {
+              <p>
+                {{ 'Employer minimum' | t }} <strong>{{ r.minimum }}/100</strong>
+              </p>
+            } @else {
+              <p>{{ 'Optional. Assessed evidence helps ranking, never eligibility.' | t }}</p>
+            }
+          </div>
+          @if (r.must) {
+            <details class="points-detail">
+              <summary>{{ 'How this skill contributes' | t }}</summary>
+              <p>
+                {{ evidence(r)?.score ?? '—' }} ÷ {{ coverage().total }} =
+                {{ points(r) | number: '1.0-2' }} {{ 'evidence points' | t }}
+              </p>
+              @if (evidence(r)?.score === undefined) {
+                <p>{{ 'No assessed evidence is not a zero proficiency score.' | t }}</p>
+              }
+            </details>
+          }
+        </article>
+      } @empty {
+        <p class="muted">{{ 'No optional skills specified.' | t }}</p>
+      }
+    </div>
+  }
+</section>

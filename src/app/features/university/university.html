@@ -1,0 +1,183 @@
+<s2w-header
+  [title]="
+    view === 'dashboard'
+      ? 'Connect your campus to opportunity.'
+      : view === 'registrations'
+        ? 'Fair registrations'
+        : 'Aggregated analytics'
+  "
+  [eyebrow]="s.user()!.name"
+>
+  @if (view === 'dashboard') {
+    <a class="primary" routerLink="/university/fairs/new">+ {{ 'Create fair' | t }}</a>
+  }
+</s2w-header>
+<nav class="view-switch" [attr.aria-label]="'University workspace' | t">
+  <a
+    routerLink="/university/dashboard"
+    [class.selected]="view === 'dashboard'"
+    [attr.aria-current]="view === 'dashboard' ? 'page' : null"
+    >{{ 'Overview' | t }}</a
+  >
+  <a
+    routerLink="/university/registrations"
+    [class.selected]="view === 'registrations'"
+    [attr.aria-current]="view === 'registrations' ? 'page' : null"
+    >{{ 'Registrations' | t }}</a
+  >
+  <a
+    routerLink="/university/analytics"
+    [class.selected]="view === 'analytics'"
+    [attr.aria-current]="view === 'analytics' ? 'page' : null"
+    >{{ 'Analytics' | t }}</a
+  >
+</nav>
+@if (view !== 'dashboard') {
+  <div class="filters">
+    <label
+      >{{ 'Career fairs' | t
+      }}<select [(ngModel)]="filter">
+        <option value="">{{ 'Career fairs' | t }}</option>
+        @for (f of fairs; track f.id) {
+          <option [value]="f.id">{{ f.name }}</option>
+        }
+      </select></label
+    >
+  </div>
+}
+<div class="summary-ribbon">
+  <span
+    ><strong data-testid="registration-count">{{ registrations.length }}</strong
+    >{{ 'Registrations' | t }}</span
+  ><span
+    ><strong>{{ companyCount }}</strong
+    >{{ 'Fair companies' | t }}</span
+  ><span
+    ><strong data-testid="fair-application-count">{{ applications.length }}</strong
+    >{{ 'Fair applications' | t }}</span
+  >
+</div>
+@if (view === 'registrations') {
+  <p class="notice">{{ 'Student IDs are self-reported and unverified.' | t }}</p>
+  <section class="card spaced">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'Name' | t }}</th>
+            <th>{{ 'Student ID' | t }}</th>
+            <th>{{ 'Career fairs' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (r of registrations; track r.id) {
+            <tr>
+              <td>{{ s.candidate(r.candidateId).name }}</td>
+              <td>{{ r.studentId }}</td>
+              <td>{{ fairName(r.fairId) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (!registrations.length) {
+      <s2w-empty
+        text="No fair registrations yet."
+        description="Students from your university will appear here after they register with a self-reported ID."
+        ><a class="secondary" routerLink="/university/fairs">{{ 'Manage fairs' | t }}</a></s2w-empty
+      >
+    }
+  </section>
+} @else if (view === 'analytics') {
+  <p class="notice">{{ 'Aggregated only. No individual assessment or passport access.' | t }}</p>
+  <section class="spaced">
+    <h2>{{ 'Skill demand & student evidence' | t }}</h2>
+    <p class="muted">
+      {{
+        'Demand comes from published jobs linked to your university fairs. Student supply includes only your university.'
+          | t
+      }}
+    </p>
+    <div class="filters">
+      <label>{{ 'Search skills' | t }}<input [(ngModel)]="skillSearch" /></label
+      ><label
+        >{{ 'Sort' | t
+        }}<select [(ngModel)]="gapSort">
+          <option value="unmet">{{ 'Highest unmet demand' | t }}</option>
+          <option value="companies">{{ 'Most requesting companies' | t }}</option>
+        </select></label
+      >
+    </div>
+    <details class="notice">
+      <summary>{{ 'How coverage is indicated' | t }}</summary>
+      <p>
+        {{
+          'Assessed students per requesting company: limited below 1, some from 1 to below 2, broader from 2. Neutral means no company demand. This local heuristic does not imply vacancies or that students meet employer minimums.'
+            | t
+        }}
+      </p>
+    </details>
+    <div class="grid spaced">
+      @for (g of gaps; track g.name) {
+        <article class="gap-card">
+          <div class="row">
+            <h3>{{ g.name }}</h3>
+            <span class="supply-label" [class]="'supply-label ' + g.level">{{ g.label | t }}</span>
+          </div>
+          <p class="muted">
+            {{ g.jobs }} {{ 'linked job postings' | t }} · {{ g.total }}
+            {{ 'students in scope' | t }}
+          </p>
+          <div class="gap-comparison">
+            @for (
+              metric of [
+                { label: 'Requesting companies', value: g.companies, kind: 'demand' },
+                { label: 'Students claiming skill', value: g.claimed, kind: 'claimed' },
+                { label: 'Students assessed', value: g.assessed, kind: 'assessed' },
+              ];
+              track metric.label
+            ) {
+              <div [class]="'gap-bar ' + metric.kind">
+                <span>{{ metric.label | t }}</span>
+                <div><i [style.width.%]="(100 * metric.value) / gapMax(g)"></i></div>
+                <strong>{{ metric.value }}</strong>
+              </div>
+            }
+          </div>
+          <small class="muted">{{
+            'Claimed skills are self-reported. Assessed does not mean passed.' | t
+          }}</small>
+        </article>
+      } @empty {
+        <s2w-empty text="No skills in this view"
+          ><button class="secondary" (click)="skillSearch = ''; filter = ''">
+            {{ 'Clear filters' | t }}
+          </button></s2w-empty
+        >
+      }
+    </div>
+  </section>
+} @else {
+  <div class="section-title">
+    <h2>{{ 'Manage fairs' | t }}</h2>
+  </div>
+  <div class="grid">
+    @for (f of fairs; track f.id) {
+      <article class="card">
+        <span class="badge mint">{{ f.date | date: 'mediumDate' }}</span>
+        <h2 class="spaced">{{ f.name }}</h2>
+        <p class="muted">{{ f.location }}</p>
+        <p>{{ f.description }}</p>
+        <a class="text-link" [routerLink]="['/university/fairs', f.id]">{{ 'View fair' | t }} ↗</a>
+      </article>
+    } @empty {
+      <s2w-empty
+        text="No fairs available."
+        description="Create a place for students and employers to begin a conversation."
+        ><a class="secondary" routerLink="/university/fairs/new">{{
+          'Create fair' | t
+        }}</a></s2w-empty
+      >
+    }
+  </div>
+}

@@ -1,0 +1,234 @@
+@if (editing) {
+  <s2w-header [title]="id ? 'Edit fair' : 'Create fair'" />
+  <form class="card editor" [formGroup]="form" (ngSubmit)="save()">
+    <div class="fields">
+      <label class="full">{{ 'Fair name' | t }}<input formControlName="name" required /></label
+      ><label
+        >{{ 'Date and time' | t
+        }}<input type="datetime-local" formControlName="date" required /></label
+      ><label>{{ 'Location' | t }}<input formControlName="location" required /></label
+      ><label class="full"
+        >{{ 'Description' | t
+        }}<textarea formControlName="description" rows="6" required></textarea>
+      </label>
+    </div>
+    @if (error) {
+      <p class="error" role="alert">{{ error | t }}</p>
+    }
+    <button class="primary">{{ 'Save fair' | t }}</button>
+  </form>
+} @else if (id) {
+  @if (fair; as f) {
+    <section class="fair-hero experience-hero">
+      <div class="fair-hero-copy">
+        <p class="eyebrow">{{ universityName(f.universityId) }}</p>
+        <s2w-header [title]="f.name" eyebrow="Career fair" [subtitle]="f.location"
+          ><ng-container>
+            @if (role === 'university') {
+              <a class="primary" [routerLink]="[base, f.id, 'edit']">{{ 'Edit fair' | t }}</a>
+            }
+          </ng-container></s2w-header
+        >
+        <p class="fair-hero-date">
+          {{ f.date | date: 'EEEE, d MMMM y' }} · {{ f.date | date: 'shortTime' }}
+        </p>
+        <p class="fair-hero-message">{{ 'Good conversations can open new doors.' | t }}</p>
+        @if (role === 'candidate' && registered(f.id)) {
+          <span class="badge mint">✓ {{ 'Registered' | t }}</span
+          ><button class="secondary" (click)="showTicket()">{{ 'View ticket' | t }}</button>
+        }
+      </div>
+      <div class="event-date-art" aria-hidden="true">
+        <span>{{ f.date | date: 'MMM' }}</span><strong>{{ f.date | date: 'dd' }}</strong
+        ><i>↗</i>
+      </div>
+    </section>
+    @if (fair) {
+      <nav class="view-switch" aria-label="Fair sections">
+        @for (section of detailTabs; track section) {
+          <button
+            type="button"
+            [class.selected]="tab === section"
+            [attr.aria-pressed]="tab === section"
+            (click)="setTab(section)"
+          >
+            {{
+              {
+                overview: 'Overview',
+                companies: 'Participating companies',
+                registrations: 'Registration Tickets',
+                jobs: 'Jobs',
+              }[section] | t
+            }}
+          </button>
+        }
+      </nav>
+    }
+    @if (tab === 'overview') {
+      <p class="detail-text">{{ f.description }}</p>
+      @if (error) {
+        <p class="error" role="alert">{{ error | t }}</p>
+      }
+      @if (role === 'candidate') {
+        <section class="card aura">
+          @if (registered(f.id)) {
+            <div class="success">✓ {{ 'Registered' | t }}</div>
+          } @else {
+            <form (ngSubmit)="register(f.id)">
+              <label
+                >{{ 'Student ID' | t
+                }}<input name="studentId" [(ngModel)]="studentIds[f.id]" required /></label
+              ><span class="form-help">{{
+                'Student IDs are self-reported and unverified.' | t
+              }}</span
+              ><button class="primary">{{ 'Register' | t }}</button>
+            </form>
+          }
+        </section>
+      }
+      @if (role === 'company') {
+        <section class="card aura">
+          <h2>{{ 'Join fair' | t }}</h2>
+          <p class="muted">{{ 'Select existing published jobs to link to this fair.' | t }}</p>
+          @for (j of ownJobs; track j.id) {
+            <label class="check"
+              ><input type="checkbox" [(ngModel)]="selected[f.id + j.id]" />{{ j.title }}</label
+            >
+          } @empty {
+            <p>{{ 'Publish a job before joining a fair.' | t }}</p>
+          }
+          <button class="primary spaced" (click)="join(f)">{{ 'Save participation' | t }}</button>
+          @if (participating(f)) {
+            <p class="success spaced">
+              {{ s.company(s.user()!.entityId).name }} · {{ 'Participating in this fair' | t }}
+            </p>
+          }
+        </section>
+      }
+      <div class="event-facts-line">
+        <span
+          ><strong>{{ f.companies.length }}</strong> {{ 'Participating companies' | t }}</span
+        ><span
+          ><strong>{{ jobs(f).length }}</strong> {{ 'Linked jobs' | t }}</span
+        >
+        @if (role === 'university') {
+          <span
+            ><strong>{{ registrations(f.id) }}</strong> {{ 'Registrations' | t }}</span
+          ><span
+            ><strong>{{ applications(f.id) }}</strong> {{ 'Fair applications' | t }}</span
+          >
+        }
+      </div>
+    }
+    @if (tab === 'companies' || (role === 'candidate' && tab === 'overview')) {
+      <h2>{{ 'Participating companies' | t }}</h2>
+      <div class="fair-company-grid">
+        @for (co of f.companies; track co.companyId) {
+          <div class="fair-company">
+            <span class="company-monogram" aria-hidden="true">{{
+              s.company(co.companyId).name.slice(0, 1)
+            }}</span>
+            <div>
+              <strong>{{ s.company(co.companyId).name }}</strong>
+              <p class="muted">{{ s.company(co.companyId).location }}</p>
+              @if (role === 'candidate') {
+                <a class="text-link" [routerLink]="['/candidate/companies', co.companyId]"
+                  >{{ 'Meet the company' | t }} ↗</a
+                >
+              }
+            </div>
+          </div>
+        } @empty {
+          <p class="muted">{{ 'Participating teams will appear here when they join.' | t }}</p>
+        }
+      </div>
+    }
+    @if (
+      (role === 'university' && tab === 'registrations') ||
+      (role === 'candidate' && registered(f.id))
+    ) {
+      <s2w-fair-tickets [fair]="f" />
+    }
+    @if (tab === 'jobs' || (role === 'candidate' && tab === 'overview')) {
+      <h2 class="spaced">{{ 'Linked jobs' | t }}</h2>
+      <div class="grid">
+        @for (j of jobs(f); track j!.id) {
+          @if (role === 'candidate') {
+            <s2w-job-card [job]="j!" [candidate]="s.candidate()" [fairId]="f.id" />
+          } @else {
+            <article class="card">
+              <p class="muted">{{ s.company(j!.companyId).name }}</p>
+              <h3>{{ j!.title }}</h3>
+              <p class="muted">{{ j!.location }} · {{ j!.mode | t }}</p>
+            </article>
+          }
+        } @empty {
+          <s2w-empty
+            text="No linked jobs yet."
+            description="Published roles will appear here when participating companies link them to this fair."
+          >
+            @if (role === 'candidate') {
+              <a class="secondary" routerLink="/candidate/jobs">{{ 'Explore other jobs' | t }}</a>
+            } @else if (role === 'company') {
+              <a class="secondary" routerLink="/company/jobs">{{ 'Review published jobs' | t }}</a>
+            } @else {
+              <button class="secondary" (click)="setTab('companies')">
+                {{ 'Participating companies' | t }}
+              </button>
+            }
+          </s2w-empty>
+        }
+      </div>
+    }
+  } @else {
+    <s2w-empty text="Page not found" />
+  }
+} @else {
+  <s2w-header
+    [title]="role === 'candidate' ? 'Your university fairs' : 'Career fairs'"
+    subtitle="Connect your campus to opportunity."
+  >
+    @if (role === 'university') {
+      <a class="primary" [routerLink]="base + '/new'">+ {{ 'Create fair' | t }}</a>
+    }
+  </s2w-header>
+  @if (role === 'candidate') {
+    <p class="notice">
+      {{ 'University selection is self-reported, not enrollment-verified.' | t }}
+    </p>
+  }
+  <div class="grid spaced">
+    @for (f of fairs; track f.id) {
+      <article class="fair-event-card">
+        <div class="fair-event-cover">
+          <span>{{ f.date | date: 'MMM' }}</span><strong>{{ f.date | date: 'dd' }}</strong
+          ><i aria-hidden="true">↗</i>
+        </div>
+        <div class="fair-event-content">
+          <p class="eyebrow">{{ universityName(f.universityId) }}</p>
+          <h2>{{ f.name }}</h2>
+          <p class="muted">{{ f.location }}</p>
+          <p>{{ f.description }}</p>
+          <div class="chips">
+            <span>{{ f.companies.length }} {{ 'Participating companies' | t }}</span
+            ><span>{{ jobs(f).length }} {{ 'Linked jobs' | t }}</span>
+          </div>
+          <a class="secondary spaced" [routerLink]="[base, f.id]">{{ 'View fair' | t }} ↗</a>
+        </div>
+      </article>
+    } @empty {
+      <s2w-empty
+        text="No fairs available."
+        description="There is no upcoming event to explore here yet. Opportunities are still waiting beyond the fair."
+      >
+        @if (role === 'candidate') {
+          <a class="secondary" routerLink="/candidate/jobs">{{ 'Explore jobs' | t }}</a>
+        } @else if (role === 'university') {
+          <a class="secondary" routerLink="/university/fairs/new">{{ 'Create fair' | t }}</a>
+        } @else {
+          <a class="secondary" routerLink="/company/jobs">{{ 'Review published jobs' | t }}</a>
+        }
+      </s2w-empty>
+    }
+  </div>
+}

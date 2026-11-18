@@ -1,0 +1,82 @@
+@if (notifications) {
+  <s2w-header title="Notifications"
+    ><button class="primary" (click)="readAll()">{{ 'Mark all as read' | t }}</button></s2w-header
+  >
+  <div class="stack">
+    @for (n of notices; track n.id) {
+      <article class="card" [class.aura]="!n.read">
+        <h3>{{ n.text | t }}</h3>
+        <p class="muted">{{ n.date | date: 'medium' }}</p>
+      </article>
+    } @empty {
+      <s2w-empty
+        text="No notifications yet."
+        description="Your application, interview and fair updates will arrive here."
+        ><a class="secondary" [routerLink]="'/' + s.user()!.role + '/dashboard'">{{
+          'Return to your workspace' | t
+        }}</a></s2w-empty
+      >
+    }
+  </div>
+} @else {
+  <s2w-header title="Settings" />
+  <div class="two-column">
+    <div class="stack">
+      <section class="card">
+        <h2>{{ 'Language' | t }} & {{ 'Theme' | t }}</h2>
+        <div class="list-row">
+          <div class="grow">
+            <strong>{{ 'Language' | t }}</strong>
+          </div>
+          <button class="secondary" (click)="p.toggleLanguage()">
+            {{ p.language() === 'en' ? 'عربي' : 'English' }}
+          </button>
+        </div>
+        <div class="list-row">
+          <strong class="grow">{{ 'Theme' | t }}</strong><button
+            class="secondary"
+            (click)="p.toggleTheme()"
+          >
+            {{ (p.dark() ? 'Light' : 'Dark') | t }}
+          </button>
+        </div>
+      </section>
+      <form class="card" (ngSubmit)="save()">
+        <h2>{{ 'Your account' | t }}</h2>
+        <label
+          >{{ 'Email' | t }}<input type="email" name="email" [(ngModel)]="email" required /></label
+        ><label
+          >{{ 'New password' | t
+          }}<input
+            type="password"
+            name="password"
+            [(ngModel)]="password"
+            autocomplete="new-password"
+            minlength="8"
+            [placeholder]="'Leave blank to keep current password' | t"
+        /></label>
+        @if (error) {
+          <p class="error">{{ error | t }}</p>
+        }
+        <button class="primary">{{ 'Save account' | t }}</button>
+      </form>
+      <section class="card">
+        <h2>{{ 'Reset demo data' | t }}</h2>
+        <p class="muted">
+          {{ 'Changes persist only in this browser. Reset removes all local demo changes.' | t }}
+        </p>
+        <button class="danger" (click)="reset()">{{ 'Reset demo data' | t }}</button>
+      </section>
+    </div>
+    <aside class="card aura">
+      <h2>{{ 'Your information' | t }}</h2>
+      <p>
+        {{
+          'Signed-in recruiters can view candidate profile contact details. Use only test contact information in this prototype.'
+            | t
+        }}
+      </p>
+      <a class="text-link" routerLink="/technology">{{ 'About the technology' | t }} ↗</a>
+    </aside>
+  </div>
+}

@@ -1,0 +1,54 @@
+<s2w-header title="Recruit with clear evidence." [eyebrow]="company.name" subtitle="Company"
+  ><a class="primary" routerLink="/company/jobs/new">+ {{ 'Create job' | t }}</a></s2w-header
+>
+<div class="summary-ribbon">
+  <span
+    ><strong>{{ published.length }}</strong
+    >{{ 'Active jobs' | t }}</span
+  ><span
+    ><strong>{{ applications.length }}</strong
+    >{{ 'Applicants' | t }}</span
+  ><span
+    ><strong>{{ interviews.length }}</strong
+    >{{ 'Upcoming interviews' | t }}</span
+  >
+</div>
+<div class="two-column">
+  <section class="card">
+    <div class="row">
+      <h2>{{ 'Jobs' | t }}</h2>
+      <a class="text-link" routerLink="/company/jobs">{{ 'Show details' | t }} ↗</a>
+    </div>
+    @for (j of jobs; track j.id) {
+      <div class="list-row">
+        <div class="grow">
+          <h3>{{ j.title }}</h3>
+          <p class="muted">{{ j.location }} · {{ j.mode | t }}</p>
+        </div>
+        <span class="badge" [class.mint]="j.published">{{
+          (j.published ? 'Published' : 'Draft') | t
+        }}</span><a class="text-link" [routerLink]="['/company/jobs', j.id, 'edit']">{{
+          'Edit' | t
+        }}</a>
+      </div>
+    } @empty {
+      <p class="muted">{{ 'No data yet.' | t }}</p>
+    }
+  </section>
+  <aside class="card aura">
+    <h2>{{ 'Recommended candidates' | t }}</h2>
+    <p class="muted">
+      {{
+        'Only candidates with every Must-Have evaluated and meeting each minimum are recommended.'
+          | t
+      }}
+    </p>
+    @if (published[0]; as j) {
+      <strong class="stat">{{ s.recommendations(j).length }}</strong>
+      <p class="muted">{{ j.title }}</p>
+    }
+    <a class="secondary wide-button" routerLink="/company/recommendations"
+      >{{ 'Show details' | t }} ↗</a
+    >
+  </aside>
+</div>

@@ -1,0 +1,117 @@
+<section class="career-hero experience-hero">
+  <div class="hero-copy">
+    <p class="eyebrow">{{ 'Career Home' | t }} / {{ c.track | t }}</p>
+    <s2w-header
+      [title]="('Good to see you,' | t) + ' ' + c.name.split(' ')[0] + '.'"
+      eyebrow="Your next chapter"
+      subtitle="There is more than one way to move forward."
+    />
+    <p class="hero-lead">{{ next.copy | t }}</p>
+    <a class="primary" [routerLink]="next.path"
+      >{{ next.label | t }} <span aria-hidden="true">↗</span></a
+    >
+    <div class="home-readiness">
+      <span>{{ 'Profile' | t }} {{ completion }}%</span
+      ><span>{{ c.skills.length }} {{ 'Skills added' | t }}</span
+      ><a routerLink="/candidate/skills">{{ assessed }} {{ 'Evaluated skills' | t }} →</a>
+    </div>
+  </div>
+  <div class="career-art" aria-hidden="true">
+    <span class="art-orbit one"></span><span class="art-orbit two"></span>
+    <div class="art-pass">
+      <img src="assets/skill2work-mark.svg" alt="" /><span>{{ 'Your skills' | t }}</span
+      ><strong>{{ 'A world of possibility.' | t }}</strong
+      ><i></i><i></i><i></i>
+    </div>
+    <span class="art-note">{{ 'Make your next move.' | t }} ↗</span>
+  </div>
+</section>
+<div class="career-home-layout">
+  <section>
+    <div class="section-title">
+      <div>
+        <p class="eyebrow">{{ 'Made for your next step' | t }}</p>
+        <h2>{{ (assessed ? 'Relevant opportunities' : 'Start exploring') | t }}</h2>
+        <p class="muted">
+          {{
+            (assessed
+              ? 'Ordered by your evaluated evidence. Every match is explained.'
+              : 'No assessment needed. Meet teams and see what interests you.'
+            ) | t
+          }}
+        </p>
+      </div>
+      <a class="text-link" routerLink="/candidate/jobs">{{ 'All jobs' | t }} ↗</a>
+    </div>
+    <div class="stack home-jobs">
+      @for (job of jobs; track job.id) {
+        <s2w-job-card [job]="job" [candidate]="c" />
+      } @empty {
+        <s2w-empty
+          text="Your next opportunity is still ahead."
+          description="No roles are published right now. Keep your profile ready for the next opening."
+          ><a class="secondary" routerLink="/candidate/profile">{{
+            'Review your profile' | t
+          }}</a></s2w-empty
+        >
+      }
+    </div>
+    <div class="section-title">
+      <div>
+        <p class="eyebrow">{{ 'Keep the conversation going' | t }}</p>
+        <h2>{{ 'Recent application activity' | t }}</h2>
+      </div>
+      <a class="text-link" routerLink="/candidate/applications">{{ 'View all' | t }} ↗</a>
+    </div>
+    <section class="activity-list">
+      @for (a of applications.slice(0, 3); track a.id) {
+        <a class="activity-item" [routerLink]="['/candidate/applications', a.id]"
+          ><span class="activity-dot" aria-hidden="true"></span>
+          <div>
+            <strong>{{ s.job(a.jobId)?.title }}</strong>
+            <p class="muted">
+              {{ s.company(s.job(a.jobId)!.companyId).name }} · {{ a.date | date: 'mediumDate' }}
+            </p>
+          </div>
+          <span class="badge status-badge" [attr.data-status]="a.status">{{
+            a.status | t
+          }}</span><span aria-hidden="true">↗</span></a
+        >
+      } @empty {
+        <s2w-empty
+          text="Your first conversation starts with an application."
+          description="When you find a role you like, apply using your existing profile."
+          ><a class="secondary" routerLink="/candidate/jobs">{{ 'Explore jobs' | t }}</a></s2w-empty
+        >
+      }
+    </section>
+  </section>
+  <aside class="home-companion">
+    <s2w-onboarding />
+    <section class="campus-invitation">
+      <p class="eyebrow">{{ 'Beyond the job board' | t }}</p>
+      <h2>{{ 'Meet your next team.' | t }}</h2>
+      @if (fair) {
+        <span class="event-date-small">{{ fair.date | date: 'dd MMM' }}</span>
+        <h3>{{ fair.name }}</h3>
+        <p class="muted">{{ fair.location }}</p>
+        <a class="secondary wide-button" [routerLink]="['/candidate/fairs', fair.id]"
+          >{{ 'Explore the fair' | t }} ↗</a
+        >
+      } @else {
+        <p class="muted">
+          {{
+            'No upcoming fair from your selected university yet. You can still connect through open roles.'
+              | t
+          }}
+        </p>
+        <a class="text-link" routerLink="/candidate/jobs">{{ 'Meet teams through jobs' | t }} ↗</a>
+      }
+    </section>
+    <p class="companion-note">
+      {{ 'Your pace. Your path.' | t }}<br /><span>{{
+        'Assessment is optional. You can browse and apply at any time.' | t
+      }}</span>
+    </p>
+  </aside>
+</div>

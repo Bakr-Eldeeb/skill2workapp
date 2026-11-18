@@ -1,0 +1,100 @@
+<s2w-header
+  [title]="universities ? 'Manage university accounts' : 'Company approvals'"
+  eyebrow="System Admin"
+>
+  @if (universities) {
+    <button class="primary" (click)="edit()">+ {{ 'Create university account' | t }}</button>
+  }
+</s2w-header>
+@if (universities) {
+  @if (showForm) {
+    <form class="card spaced" [formGroup]="form" (ngSubmit)="save()">
+      <h2>{{ (editingId ? 'Edit' : 'Create university account') | t }}</h2>
+      <div class="fields">
+        <label>{{ 'Name' | t }}<input formControlName="name" required /></label
+        ><label>{{ 'Location' | t }}<input formControlName="location" required /></label
+        ><label>{{ 'Email' | t }}<input type="email" formControlName="email" required /></label
+        ><label
+          >{{ 'Password' | t
+          }}<input
+            type="password"
+            formControlName="password"
+            [required]="!editingId"
+            autocomplete="new-password"
+            minlength="8"
+        /></label>
+      </div>
+      @if (error) {
+        <p class="error" role="alert">{{ error | t }}</p>
+      }
+      <div class="actions">
+        <button class="primary">{{ 'Save account' | t }}</button><button
+          class="quiet"
+          type="button"
+          (click)="showForm = false"
+        >
+          {{ 'Close' | t }}
+        </button>
+      </div>
+    </form>
+  }
+  <div class="stack spaced">
+    @for (u of s.state().universities; track u.id) {
+      <article class="card row">
+        <div>
+          <h3>{{ u.name }}</h3>
+          <p class="muted">{{ u.location }}</p>
+        </div>
+        <button class="secondary" (click)="edit(u.id)">{{ 'Edit' | t }}</button>
+      </article>
+    }
+  </div>
+} @else {
+  <div class="filters">
+    <label
+      >{{ 'Account type' | t
+      }}<select [(ngModel)]="filter">
+        <option value="">{{ 'Company' | t }}</option>
+        @for (status of ['Pending', 'Approved', 'Rejected']; track status) {
+          <option [value]="status">{{ status | t }}</option>
+        }
+      </select></label
+    >
+  </div>
+  <div class="stack">
+    @for (c of companies; track c.id) {
+      <article class="card">
+        <div class="row">
+          <div>
+            <h2>{{ c.name }}</h2>
+            <p class="muted">{{ c.location }}</p>
+          </div>
+          <span class="badge" [class.mint]="c.status === 'Approved'">{{ c.status | t }}</span>
+        </div>
+        <p>{{ c.description }}</p>
+        <label>{{ 'Reason (optional)' | t }}<input [(ngModel)]="reasons[c.id]" /></label>
+        <div class="actions spaced">
+          <button class="secondary" (click)="s.approve(c.id, 'Approved')">
+            {{ 'Approve' | t }}</button><button
+            class="quiet"
+            (click)="s.approve(c.id, 'Rejected', reasons[c.id] ?? '')"
+          >
+            {{ 'Reject' | t }}
+          </button>
+        </div>
+      </article>
+    } @empty {
+      <s2w-empty
+        [text]="filter === 'Pending' ? 'All caught up.' : 'No matching companies.'"
+        [description]="
+          filter === 'Pending'
+            ? 'There are no company approvals waiting for you.'
+            : 'Try another approval status to find the company you need.'
+        "
+        ><button class="secondary" (click)="filter = filter === 'Pending' ? 'Approved' : ''">
+          {{ (filter === 'Pending' ? 'View approved companies' : 'Show all companies') | t }}
+        </button></s2w-empty
+      >
+    }
+  </div>
+}

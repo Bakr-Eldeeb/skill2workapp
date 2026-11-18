@@ -1,0 +1,15 @@
+{
+  "brandName": "Skill2Work",
+  "tagline": "Prove Skills. Find Work.",
+  "colors": {
+    "primary": "#6556E8",
+    "mint": "#16B8AA",
+    "coral": "#FFAF8C",
+    "lightBackground": "#F7F8FE",
+    "darkBackground": "#111729"
+  },
+  "fonts": {
+    "en": "Plus Jakarta Sans",
+    "ar": "Tajawal"
+  }
+}

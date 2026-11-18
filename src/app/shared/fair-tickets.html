@@ -1,0 +1,83 @@
+<section class="ticket-workspace" aria-labelledby="tickets-title">
+  <div class="row">
+    <div>
+      <p class="eyebrow">{{ (university ? 'University fair' : 'Your registration') | t }}</p>
+      <h2 id="tickets-title" tabindex="-1">
+        {{ (university ? 'Registration Tickets' : 'My Fair Ticket') | t }}
+      </h2>
+    </div>
+    @if (university && rows.length) {
+      <button class="primary" (click)="printAll()">{{ 'Print all tickets' | t }}</button>
+    }
+  </div>
+  @if (university) {
+    <div class="filters">
+      <label class="ticket-search"
+        >{{ 'Search registered students' | t
+        }}<input
+          [(ngModel)]="search"
+          (ngModelChange)="selected = ''"
+          placeholder="Name / Student ID / Registration ID"
+      /></label>
+      <label
+        >{{ 'Search field' | t
+        }}<select
+          [(ngModel)]="searchBy"
+          (ngModelChange)="selected = ''"
+          aria-label="Ticket search field"
+        >
+          <option value="all">{{ 'All fields' | t }}</option>
+          <option value="name">{{ 'Name' | t }}</option>
+          <option value="student">{{ 'Student ID' | t }}</option>
+          <option value="registration">{{ 'Registration ID' | t }}</option>
+        </select></label
+      >
+    </div>
+  }
+  <p class="small muted">
+    {{
+      'Tickets are available in this browser. See Technology for prototype ticket information.' | t
+    }}
+  </p>
+  <div class="ticket-sheet">
+    @for (r of visible; track r.id) {
+      <article class="fair-ticket" [attr.data-ticket]="r.id">
+        <div class="ticket-main">
+          <img class="ticket-brand" src="assets/skill2work-logo-light.svg" alt="Skill2Work" />
+          <p class="eyebrow">{{ universityName }}</p>
+          <h3>{{ fair.name }}</h3>
+          <p>{{ fair.date | date: 'medium' }} · {{ fair.location }}</p>
+          <h4>{{ s.candidate(r.candidateId).name }}</h4>
+          <p>{{ 'Registration ID' | t }}: {{ r.id }}</p>
+          <p>{{ 'Student ID' | t }}: {{ r.studentId }}</p>
+          <small>{{ 'Registration ticket · no attendance status' | t }}</small>
+        </div>
+        <div class="ticket-code">
+          <img [src]="qr(r)" alt="Registration ticket QR code" width="200" height="200" />
+        </div>
+        <div class="actions ticket-actions">
+          <button class="secondary" (click)="download(r)">{{ 'Download PNG' | t }}</button><button
+            class="quiet"
+            (click)="printOne(r)"
+          >
+            {{ 'Print ticket' | t }}
+          </button>
+          @if (university) {
+            <button class="text-link" (click)="selected = selected ? '' : r.id">
+              {{ (selected ? 'View all tickets' : 'View ticket') | t }}
+            </button>
+          }
+        </div>
+      </article>
+    } @empty {
+      <s2w-empty [text]="search ? 'No matching results.' : 'No fair registrations yet.'">
+        @if (search) {
+          <button class="secondary" (click)="search = ''">{{ 'Clear filters' | t }}</button>
+        }
+      </s2w-empty>
+    }
+  </div>
+  @if (error) {
+    <p class="error" role="alert">{{ error | t }}</p>
+  }
+</section>

@@ -1,0 +1,8 @@
+.spaced {
+  margin-top: 18px;
+}
+.grid section {
+  padding: 18px;
+  background: var(--bg);
+  border-radius: 12px;
+}

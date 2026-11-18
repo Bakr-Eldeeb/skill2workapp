@@ -1,0 +1,96 @@
+<s2w-header title="Applicants & hiring" subtitle="Application updates" />
+<div class="filters">
+  <label
+    >{{ 'Select job' | t
+    }}<select [(ngModel)]="jobFilter">
+      <option value="">{{ 'Jobs' | t }}</option>
+      @for (j of jobs; track j.id) {
+        <option [value]="j.id">{{ j.title }}</option>
+      }
+    </select></label
+  ><label
+    >{{ 'Application status' | t
+    }}<select [(ngModel)]="statusFilter">
+      <option value="">{{ 'All candidates' | t }}</option>
+      @for (status of statusOptions; track status) {
+        <option [value]="status">{{ status | t }}</option>
+      }
+    </select></label
+  >
+</div>
+<p class="muted">
+  {{ 'Applied' | t }} → {{ 'Shortlisted' | t }} → {{ 'Interview' | t }} → {{ 'Offer' | t }} →
+  {{ 'Hired' | t }} /
+  {{ 'Rejected' | t }}
+</p>
+<div class="stack">
+  @for (a of applications; track a.id) {
+    <article class="card">
+      <div class="row">
+        <div class="actions">
+          <span class="avatar">{{ s.candidate(a.candidateId).name.slice(0, 1) }}</span>
+          <div>
+            <h3>{{ s.candidate(a.candidateId).name }}</h3>
+            <p class="muted">{{ s.job(a.jobId)?.title }} · {{ a.date | date: 'mediumDate' }}</p>
+          </div>
+        </div>
+        <span class="badge status-badge" [attr.data-status]="a.status">{{ a.status | t }}</span><a
+          class="text-link"
+          [routerLink]="['/company/candidates', a.candidateId]"
+          >{{ 'View candidate' | t }} ↗</a
+        >
+      </div>
+      @if (a.letter) {
+        <details>
+          <summary>{{ 'Cover letter (optional)' | t }}</summary>
+          <p class="detail-text spaced">{{ a.letter }}</p>
+        </details>
+      }
+      <div class="grid spaced">
+        <section>
+          <label
+            >{{ 'Application status' | t
+            }}<select
+              [ngModel]="statuses[a.id] ?? a.status"
+              (ngModelChange)="statuses[a.id] = $event"
+            >
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ status | t }}</option>
+              }
+            </select></label
+          ><button
+            class="secondary spaced"
+            (click)="s.updateStatus(a.id, statuses[a.id] ?? a.status)"
+          >
+            {{ 'Save status' | t }}
+          </button>
+        </section>
+        <section>
+          <label
+            >{{ 'Date and time' | t
+            }}<input type="datetime-local" [(ngModel)]="dates[a.id]" /></label
+          ><button class="secondary spaced" (click)="schedule(a.id)">
+            {{ 'Schedule interview' | t }}
+          </button>
+          @if (a.interview) {
+            <p class="muted spaced">
+              {{ a.interview.date | date: 'medium' }} · {{ a.interview.response | t }}
+            </p>
+            <p class="muted">{{ a.interview.note }}</p>
+          }
+          @if (errors[a.id]) {
+            <p class="error" role="alert">{{ errors[a.id] | t }}</p>
+          }
+        </section>
+      </div>
+    </article>
+  } @empty {
+    <s2w-empty
+      text="No applications yet."
+      description="Applications will appear here when candidates respond to your published roles. Make sure your listings are ready to meet them."
+      ><a class="secondary" routerLink="/company/jobs">{{
+        'Review published jobs' | t
+      }}</a></s2w-empty
+    >
+  }
+</div>

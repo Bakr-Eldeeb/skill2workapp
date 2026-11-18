@@ -1,0 +1,6 @@
+form h2 {
+  margin: 0;
+}
+form > .primary {
+  justify-self: start;
+}

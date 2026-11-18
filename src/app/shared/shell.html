@@ -1,0 +1,121 @@
+<a class="skip-link" href="#content" (click)="focusContent($event)">{{ 'Skip to content' | t }}</a>
+<aside class="sidebar">
+  <a routerLink="/"><s2w-logo /></a>
+  <p class="portal-label">
+    {{
+      (role === 'admin'
+        ? 'System Admin'
+        : role === 'candidate'
+          ? 'Candidate'
+          : role === 'company'
+            ? 'Company'
+            : 'University'
+      ) | t
+    }}
+    <span class="live-dot"></span>
+  </p>
+  <nav aria-label="Workspace">
+    @for (item of nav; track item.path) {
+      <a
+        [routerLink]="base + '/' + item.path"
+        [class.active]="isActive(item.path)"
+        [attr.aria-current]="isActive(item.path) ? 'page' : null"
+      >
+        <span aria-hidden="true">{{ item.icon }}</span>{{ item.label | t }}
+      </a>
+    }
+    @if (secondaryNav.length) {
+      <details class="nav-more">
+        <summary><span aria-hidden="true">•••</span>{{ 'Profile & account' | t }}</summary>
+        @for (item of secondaryNav; track item.path) {
+          <a
+            class="secondary-link"
+            [routerLink]="base + '/' + item.path"
+            [class.active]="isActive(item.path)"
+            [attr.aria-current]="isActive(item.path) ? 'page' : null"
+          >
+            <span aria-hidden="true">{{ item.icon }}</span>{{ item.label | t }}
+          </a>
+        }
+      </details>
+    }
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="identity">
+      <span class="avatar">{{ s.user()?.name?.slice(0, 1) }}</span>
+      <div>
+        <strong>{{ s.user()?.name }}</strong><small>{{ 'Your account' | t }}</small>
+      </div>
+    </div>
+    <button class="quiet" (click)="logout()">{{ 'Sign out' | t }} ↗</button>
+  </div>
+</aside>
+<div
+  class="workspace"
+  [class.jobs-directory]="jobsDirectory()"
+  [attr.tabindex]="jobsDirectory() ? 0 : null"
+  [attr.role]="jobsDirectory() ? 'region' : null"
+  [attr.aria-label]="jobsDirectory() ? ('Find jobs' | t) : null"
+>
+  <header class="topbar">
+    <div class="topbar-location">
+      <span class="breadcrumb">{{ currentLabel | t }}</span>
+      <img class="mobile-mark" src="assets/skill2work-mark.svg" alt="Skill2Work" />
+    </div>
+    <div class="top-actions">
+      <button class="quiet" aria-label="Change language" (click)="p.toggleLanguage()">
+        {{ p.language() === 'en' ? 'عربي' : 'English' }}
+      </button>
+      <button class="icon-button" aria-label="Toggle theme" (click)="p.toggleTheme()">
+        {{ p.dark() ? '☀' : '☾' }}
+      </button>
+      @if (role === 'candidate' || role === 'company') {
+        <a
+          class="notification-button"
+          [routerLink]="base + '/notifications'"
+          [attr.aria-label]="'Notifications' | t"
+        >
+          ♧
+          @if (unread()) {
+            <span>{{ unread() }}</span>
+          }
+        </a>
+      }
+    </div>
+  </header>
+  <main id="content" tabindex="-1">
+    @if (allowed) {
+      <router-outlet />
+    }
+  </main>
+  <footer class="workspace-footer">
+    {{ brand.name }} · {{ brand.tagline | t
+    }}<a routerLink="/technology">{{ 'About the technology' | t }}</a>
+  </footer>
+</div>
+<nav class="mobile-nav" aria-label="Mobile navigation">
+  @for (item of mobileNav; track item.path) {
+    <a [routerLink]="base + '/' + item.path" [class.active]="isActive(item.path)">
+      <span aria-hidden="true">{{ item.icon }}</span><small>{{ item.label | t }}</small>
+    </a>
+  }
+  @if (moreNav.length) {
+    <button
+      type="button"
+      (click)="more = !more"
+      [attr.aria-expanded]="more"
+      aria-controls="mobile-more"
+    >
+      <span aria-hidden="true">•••</span><small>{{ 'Account' | t }}</small>
+    </button>
+  }
+</nav>
+@if (more) {
+  <div id="mobile-more" class="more-sheet" (keydown.escape)="more = false">
+    <button class="quiet" type="button" (click)="more = false">{{ 'Close' | t }} ×</button>
+    @for (item of moreNav; track item.path) {
+      <a [routerLink]="base + '/' + item.path" (click)="more = false">{{ item.label | t }}</a>
+    }
+    <button class="quiet" (click)="logout()">{{ 'Sign out' | t }}</button>
+  </div>
+}

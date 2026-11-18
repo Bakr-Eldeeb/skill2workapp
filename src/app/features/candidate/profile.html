@@ -1,0 +1,350 @@
+@if (c; as c) {
+  <s2w-header
+    [title]="readonly ? 'Candidate profile' : 'My profile'"
+    [subtitle]="c.headline || c.track"
+  >
+    @if (!readonly && !editing) {
+      <button class="primary" (click)="edit()">✎ {{ 'Edit profile' | t }}</button>
+    }
+  </s2w-header>
+  @if (editing && draft; as d) {
+    <form class="card profile-editor" (ngSubmit)="save()">
+      <h2>{{ 'Make it yours' | t }}</h2>
+      <p class="muted">
+        {{ 'Images: JPG, PNG or WebP, up to 5 MB. Resized and stored in this browser.' | t }}
+      </p>
+      <s2w-profile-media
+        kind="cover"
+        [value]="d.cover || ''"
+        alt="Profile cover"
+        [editable]="true"
+        (changed)="media('cover', $event)"
+      /><s2w-profile-media
+        [value]="d.photo || ''"
+        [alt]="d.name"
+        [editable]="true"
+        (changed)="media('photo', $event)"
+      />
+      <div class="fields">
+        <label>{{ 'Name' | t }}<input name="name" [(ngModel)]="d.name" required /></label
+        ><label>{{ 'Headline' | t }}<input name="headline" [(ngModel)]="d.headline" /></label
+        ><label
+          >{{ 'Location' | t }}<input name="location" [(ngModel)]="d.location" required /></label
+        ><label
+          >{{ 'University' | t
+          }}<select name="universityId" [(ngModel)]="d.universityId">
+            @for (u of s.state().universities; track u.id) {
+              <option [value]="u.id">{{ u.name }}</option>
+            }
+          </select></label
+        ><label
+          >{{ 'Career track' | t
+          }}<select name="track" [(ngModel)]="d.track">
+            @for (t of ['Frontend Development', 'Backend Development', 'Product Design']; track t) {
+              <option>{{ t }}</option>
+            }
+          </select></label
+        ><label class="full"
+          >{{ 'About' | t }}<textarea name="bio" [(ngModel)]="d.bio" rows="4"></textarea></label
+        ><label
+          >{{ 'Contact email' | t
+          }}<input name="contactEmail" type="email" [(ngModel)]="d.contactEmail" /></label
+        ><label>{{ 'Phone' | t }}<input name="phone" type="tel" [(ngModel)]="d.phone" /></label
+        ><label
+          >GitHub<input
+            name="github"
+            type="url"
+            [(ngModel)]="d.github"
+            placeholder="https://" /></label
+        ><label
+          >{{ 'Portfolio website' | t
+          }}<input name="website" type="url" [(ngModel)]="d.website" placeholder="https://"
+        /></label>
+      </div>
+      <p class="notice">
+        {{
+          'Signed-in recruiters can view your complete profile, including email and phone. Use only test contact information in this prototype.'
+            | t
+        }}
+      </p>
+      @for (kind of ['educationEntries', 'experienceEntries']; track kind) {
+        <section class="spaced">
+          <h2>{{ (kind === 'educationEntries' ? 'Education' : 'Experience') | t }}</h2>
+          @for (
+            e of kind === 'educationEntries' ? d.educationEntries : d.experienceEntries;
+            track e.id;
+            let i = $index
+          ) {
+            <div class="entry-editor fields">
+              <label
+                >{{ 'Title' | t
+                }}<input [name]="kind + i + 'title'" [(ngModel)]="e.title" required /></label
+              ><label
+                >{{ 'Organization' | t
+                }}<input [name]="kind + i + 'org'" [(ngModel)]="e.organization" required /></label
+              ><label
+                >{{ 'Start' | t
+                }}<input type="month" [name]="kind + i + 'start'" [(ngModel)]="e.start" /></label
+              ><label
+                >{{ 'End (optional)' | t
+                }}<input type="month" [name]="kind + i + 'end'" [(ngModel)]="e.end" /></label
+              ><label class="full"
+                >{{ 'Description' | t
+                }}<textarea
+                  [name]="kind + i + 'desc'"
+                  [(ngModel)]="e.description"
+                ></textarea></label
+              ><button
+                class="quiet"
+                type="button"
+                (click)="
+                  (kind === 'educationEntries' ? d.educationEntries : d.experienceEntries)!.splice(
+                    i,
+                    1
+                  )
+                "
+              >
+                {{ 'Remove' | t }}
+              </button>
+            </div>
+          }
+          <button
+            class="secondary"
+            type="button"
+            (click)="
+              entry((kind === 'educationEntries' ? d.educationEntries : d.experienceEntries)!)
+            "
+          >
+            + {{ 'Add entry' | t }}
+          </button>
+        </section>
+      }
+      <section id="projects-editor" class="spaced">
+        <h2>{{ 'Projects' | t }}</h2>
+        @for (p of d.portfolio; track p.id; let i = $index) {
+          <article class="entry-editor">
+            <s2w-profile-media
+              kind="cover"
+              [value]="p.thumbnail || ''"
+              [alt]="p.title || 'Project cover'"
+              [editable]="true"
+              (changed)="p.thumbnail = $event"
+            />
+            <div class="fields">
+              <label
+                >{{ 'Project title' | t
+                }}<input [name]="'projectTitle' + i" [(ngModel)]="p.title" required /></label
+              ><label
+                >{{ 'Skills / technologies' | t
+                }}<input [name]="'projectSkills' + i" [(ngModel)]="p.skills" /></label
+              ><label class="full"
+                >{{ 'Description' | t
+                }}<textarea
+                  [name]="'projectDescription' + i"
+                  [(ngModel)]="p.description"
+                  required
+                ></textarea></label
+              ><label
+                >{{ 'Category' | t
+                }}<input [name]="'category' + i" [(ngModel)]="p.category" /></label
+              ><label
+                >{{ 'Team or solo' | t
+                }}<select [name]="'team' + i" [(ngModel)]="p.team">
+                  <option>Solo</option>
+                  <option>Team</option>
+                </select></label
+              ><label
+                >{{ 'Your role' | t
+                }}<input [name]="'projectRole' + i" [(ngModel)]="p.role" /></label
+              ><label
+                >GitHub<input
+                  type="url"
+                  [name]="'repo' + i"
+                  [(ngModel)]="p.github"
+                  placeholder="https://" /></label
+              ><label
+                >{{ 'Live website' | t
+                }}<input
+                  type="url"
+                  [name]="'live' + i"
+                  [(ngModel)]="p.website"
+                  placeholder="https://" /></label
+              ><label
+                >Behance / Dribbble<input
+                  type="url"
+                  [name]="'case' + i"
+                  [(ngModel)]="p.caseStudy"
+                  placeholder="https://" /></label
+              ><label
+                >{{ 'Video demonstration' | t
+                }}<input
+                  type="url"
+                  [name]="'video' + i"
+                  [(ngModel)]="p.video"
+                  placeholder="https://"
+              /></label>
+            </div>
+            <button class="quiet" type="button" (click)="d.portfolio!.splice(i, 1)">
+              {{ 'Remove project' | t }}
+            </button>
+          </article>
+        }
+        <button class="secondary" type="button" (click)="addProject()">
+          + {{ 'Add project' | t }}
+        </button>
+      </section>
+      @if (error) {
+        <p class="error" role="alert">{{ error | t }}</p>
+      }
+      <div class="actions spaced">
+        <button class="primary" type="submit">{{ 'Save profile' | t }}</button><button
+          class="secondary"
+          type="button"
+          (click)="editing = false"
+        >
+          {{ 'Cancel' | t }}
+        </button>
+      </div>
+    </form>
+  } @else {
+    <article class="profile-hero">
+      <s2w-profile-media kind="cover" [value]="c.cover || ''" alt="Profile cover" />
+      <div class="profile-identity">
+        <s2w-profile-media [value]="c.photo || ''" [alt]="c.name" />
+        <div>
+          <p class="eyebrow">{{ c.track }}</p>
+          <h2>{{ c.name }}</h2>
+          <p>{{ c.headline || c.track }}</p>
+          <p class="muted">{{ c.location }}</p>
+        </div>
+      </div>
+    </article>
+    <div class="profile-layout">
+      <div class="stack">
+        <section class="card">
+          <h2>{{ 'About' | t }}</h2>
+          <p class="detail-text">
+            {{ c.bio || ('Tell your story through the work you enjoy.' | t) }}
+          </p>
+        </section>
+        @for (kind of ['educationEntries', 'experienceEntries']; track kind) {
+          <section class="card">
+            <h2>{{ (kind === 'educationEntries' ? 'Education' : 'Experience') | t }}</h2>
+            @for (
+              e of kind === 'educationEntries' ? c.educationEntries : c.experienceEntries;
+              track e.id
+            ) {
+              <article class="career-entry">
+                <span class="entry-dot"></span>
+                <h3>{{ e.title }}</h3>
+                <p>{{ e.organization }}</p>
+                <small class="muted">{{ e.start }}{{ e.start ? ' — ' : '' }}{{ e.end }}</small>
+                <p>{{ e.description }}</p>
+              </article>
+            } @empty {
+              <p class="muted">{{ 'No entries added yet.' | t }}</p>
+            }
+          </section>
+        }
+        <section id="projects" class="card">
+          <div class="row">
+            <h2>{{ 'Projects' | t }}</h2>
+            @if (!readonly) {
+              <button class="text-link" (click)="edit()">✎ {{ 'Edit projects' | t }}</button>
+            }
+          </div>
+          <div class="portfolio-grid">
+            @for (p of c.portfolio; track p.id) {
+              <article class="portfolio-card">
+                <s2w-profile-media kind="cover" [value]="p.thumbnail || ''" [alt]="p.title" />
+                <div class="portfolio-body">
+                  <span class="badge">{{ p.team | t }}{{ p.role ? ' · ' + p.role : '' }}</span>
+                  <h3>{{ p.title }}</h3>
+                  <p>{{ p.description }}</p>
+                  <p class="muted">{{ p.skills }}</p>
+                  <small>{{ p.category }}</small>
+                  <div class="actions">
+                    @for (
+                      link of [
+                        { label: 'GitHub', value: p.github },
+                        { label: 'Live website', value: p.website },
+                        { label: 'Design case study', value: p.caseStudy },
+                        { label: 'Video demonstration', value: p.video },
+                      ];
+                      track link.label
+                    ) {
+                      @if (safeUrl(link.value); as href) {
+                        <a class="text-link" [href]="href" target="_blank" rel="noopener noreferrer"
+                          >{{ link.label | t }} ↗</a
+                        >
+                      }
+                    }
+                  </div>
+                </div>
+              </article>
+            } @empty {
+              <s2w-empty
+                text="Let your work tell the story."
+                description="Projects can include code, design, a website or a video."
+              >
+                @if (!readonly) {
+                  <button class="secondary" (click)="edit()">{{ 'Add project' | t }}</button>
+                }
+              </s2w-empty>
+            }
+          </div>
+        </section>
+      </div>
+      <aside class="stack">
+        <section class="card contact-card">
+          <h2>{{ 'Contact' | t }}</h2>
+          @if (c.contactEmail) {
+            <a [href]="'mailto:' + c.contactEmail">{{ c.contactEmail }}</a>
+          }
+          @if (c.phone) {
+            <a [href]="'tel:' + c.phone">{{ c.phone }}</a>
+          }
+          @for (
+            link of [
+              { label: 'GitHub', value: c.github },
+              { label: 'Portfolio website', value: c.website },
+            ];
+            track link.label
+          ) {
+            @if (safeUrl(link.value); as href) {
+              <a [href]="href" target="_blank" rel="noopener noreferrer">{{ link.label | t }} ↗</a>
+            }
+          }
+          @if (!c.contactEmail && !c.phone) {
+            <p class="muted">{{ 'Contact details have not been added.' | t }}</p>
+          }
+        </section>
+        <section class="card">
+          <h2>{{ 'Skills & Passport' | t }}</h2>
+          @if (s.overall(c) !== null) {
+            <s2w-score [value]="s.overall(c)" label="Overall score" />
+          }
+          @for (skill of c.skills; track skill.name) {
+            <details class="skill-proof">
+              <summary>
+                {{ skill.name }} <strong>{{ skill.score ?? ('Claimed' | t) }}</strong>
+              </summary>
+              <p>{{ skill.date | date: 'mediumDate' }}</p>
+              <p>{{ skill.summary }}</p>
+              @if (skill.score !== undefined) {
+                <small>{{ 'Practice result — not AI grading or certification.' | t }}</small>
+              }
+            </details>
+          } @empty {
+            <p>{{ 'No claimed skills yet.' | t }}</p>
+          }
+          @if (!readonly) {
+            <a class="text-link" routerLink="/candidate/skills">{{ 'Manage skills' | t }} ↗</a>
+          }
+        </section>
+      </aside>
+    </div>
+  }
+} @else {
+  <s2w-header title="Candidate profile" /><s2w-empty text="Profile unavailable" />
+}

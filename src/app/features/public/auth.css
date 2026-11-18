@@ -1,0 +1,33 @@
+.auth-story {
+  justify-content: space-between;
+}
+.story {
+  margin: auto 0;
+  padding-block: 60px;
+}
+.story > p {
+  max-width: 400px;
+  color: var(--muted);
+}
+.story .card {
+  max-width: 420px;
+  margin-top: 35px;
+}
+.auth-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  font-size: 11px;
+  color: var(--primary-text);
+}
+.auth-panel form {
+  margin-top: 28px;
+}
+
+.auth-back {
+  display: inline-flex;
+  margin-bottom: 18px;
+  align-items: center;
+}

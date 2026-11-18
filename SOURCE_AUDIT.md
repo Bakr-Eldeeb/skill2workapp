@@ -1,0 +1,15 @@
+Historical source audit of the original Stitch inputs. V4_CHANGELOG.md and V4_SCREEN_MAP.md supersede scope notes below: QR registration tickets (without check-in) are now explicitly approved and implemented.
+
+# Source inspection and implementation decisions
+
+All three supplied archives opened and extracted successfully. The Work Prompt archive contains `Skill2Work_Work_Prompt.md`; this is the uploaded counterpart of the all-in-one Work Mode instruction file. The starter pack's AGENTS.md and CODEX_SKILL2WORK_MASTER_PROMPT.md are byte-identical (SHA-256 e5429404a4f967f0caa45680e61bfd49be190daf60444e8dff05254ce4accb39) and were read in full, as was the Work Prompt. Brand tokens and exact supplied assets were inspected. The app was implemented as a new project.
+
+The Stitch archive contains **26 HTML screens, 26 screenshot references, and one DESIGN.md**. All screen HTML files were parsed for headings/navigation and inspected for conflicting features. Screenshots were reviewed as a contact sheet and the candidate recommended-jobs reference was opened at full size. The role layout, violet navigation, lavender canvas, soft gradient panels, mint/coral accents, card hierarchy and typography were used as visual reference, not copied as brittle runtime HTML.
+
+Overlaps include two Candidate dashboard variants, two Company dashboard variants, and multiple discovery/detail combinations. These consolidate into the approved groups rather than becoming extra features. Stitch does not provide complete public authentication/signup, company approval-state flows, manual fair creation, individual settings subflows or all admin forms; these were implemented from the authoritative product rules.
+
+The source prototypes use many `href="#"` links and frequently mix role navigation. Candidate identities change among Maya, Nour and Elena; scores lack consistent underlying data. Old 2024/2025 events, real-company partnership implications, global percentile labels, smart-ledger/cryptographic claims, QR/fast-pass controls, curriculum/governance panels, and unnecessary advanced metrics conflict with the approved scope. None is implemented as a product capability. Current fixtures use one deterministic Egyptian seed and future late-2026 events at the task date.
+
+The 31 approved screen groups and auxiliary subflows are mapped in SCREEN_MAP.md. Public assets retain the supplied logo/icon bytes; the unrelated brand-pack instructions were not shipped as a public page. Font files are installed from @fontsource. Runtime colors use CSS semantic tokens; mode/direction are controlled centrally. Product runtime naming is in `src/app/core/brand.ts`; `src/index.html` contains the required initial static title. A future rename also requires replacement wordmark assets and an updated initial title.
+
+Responsive and theme styles are implemented, but visual comparison of the resulting app, screenshots, clipping, focus appearance, and real browser interactions remain unverified because the browser runtime could not launch/connect. Happy DOM integration checks are not claimed as visual QA.

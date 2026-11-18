@@ -1,0 +1,146 @@
+<header class="public-top">
+  <a routerLink="/"><s2w-logo /></a>
+  <nav>
+    <a class="quiet landing-about-link" routerLink="/" fragment="about">{{
+      'About us' | t
+    }}</a><button class="quiet" aria-label="Change language" (click)="p.toggleLanguage()">
+      {{ p.language() === 'en' ? 'عربي' : 'English' }}</button
+    ><button class="icon-button" aria-label="Toggle theme" (click)="p.toggleTheme()">
+      {{ p.dark() ? '☀' : '☾' }}</button
+    ><a class="secondary" routerLink="/sign-in">{{ 'Sign in' | t }}</a>
+  </nav>
+</header>
+<main class="platform-landing">
+  <section class="editorial-hero">
+    <div>
+      <p class="eyebrow">{{ 'Your next chapter starts with you.' | t }}</p>
+      <h1>
+        {{ 'More than a résumé.' | t }} <em>{{ 'A world of possibility.' | t }}</em>
+      </h1>
+      <p>
+        {{
+          'Bring your skills to life. Share the work you are proud of, understand what employers need, and find your next opportunity.'
+            | t
+        }}
+      </p>
+      <div class="actions">
+        <a class="primary" routerLink="/sign-up">{{ 'Find your next chapter' | t }} ↗</a
+        ><a class="text-link" routerLink="/" fragment="how-it-works"
+          >{{ 'See how it works' | t }} ↓</a
+        >
+      </div>
+      <div class="hero-caption">
+        <span class="live-dot"></span>{{ 'Skills. Stories. Real possibilities.' | t }}
+      </div>
+    </div>
+    <div class="editorial-art">
+      <div class="art-orbit orbit-one"></div>
+      <div class="art-orbit orbit-two"></div>
+      <img
+        src="assets/career-desk.svg"
+        alt="An illustrated workspace for skills, projects and new opportunities"
+      />
+      <div class="floating-note note-one"><span>✦</span>{{ 'Your work tells a story.' | t }}</div>
+      <div class="floating-note note-two"><span>↗</span>{{ 'Make the next move yours.' | t }}</div>
+    </div>
+  </section>
+  <section id="how-it-works" s2wReveal class="landing-section process-story">
+    <p class="eyebrow">{{ 'From possibility to a clear next step' | t }}</p>
+    <h2>{{ 'A career journey that makes sense.' | t }}</h2>
+    <div class="process-columns">
+      @for (
+        step of [
+          {
+            title: 'Add your skills',
+            copy: 'Create a profile with your experience and projects. Tell the story only you can tell.',
+            icon: '○',
+          },
+          {
+            title: 'Assess your skills',
+            copy: 'Explore optional practice assessment and understand your evidence. No assessment is needed to apply.',
+            icon: '◇',
+          },
+          {
+            title: 'Discover opportunities',
+            copy: 'See employer minimums, understand your evidence and start a conversation with a team.',
+            icon: '↗',
+          },
+        ];
+        track step.title;
+        let i = $index
+      ) {
+        <article>
+          <span class="process-index">0{{ i + 1 }}</span
+          ><span class="process-symbol">{{ step.icon }}</span>
+          <h3>{{ step.title | t }}</h3>
+          <p>{{ step.copy | t }}</p>
+        </article>
+      }
+    </div>
+  </section>
+  <section s2wReveal class="landing-section audience-story">
+    <div>
+      <p class="eyebrow">{{ 'One platform. Many next chapters.' | t }}</p>
+      <h2>{{ 'Good opportunities start with understanding people.' | t }}</h2>
+    </div>
+    <div class="audience-panels">
+      <article class="candidate-panel">
+        <span>01 /</span>
+        <h3>{{ 'For candidates' | t }}</h3>
+        <p>
+          {{
+            'A profile with personality. Projects with proof. Jobs you can understand before you apply.'
+              | t
+          }}
+        </p>
+        <a class="text-link" routerLink="/sign-up">{{ 'Build your profile' | t }} ↗</a>
+      </article>
+      <article>
+        <span>02 /</span>
+        <h3>{{ 'For companies' | t }}</h3>
+        <p>
+          {{
+            'Set clear skill requirements, explore complete profiles and keep hiring conversations moving.'
+              | t
+          }}
+        </p>
+        <a class="text-link" routerLink="/company-sign-up">{{ 'Find your next teammate' | t }} ↗</a>
+      </article>
+      <article>
+        <span>03 /</span>
+        <h3>{{ 'For universities' | t }}</h3>
+        <p>
+          {{
+            'Connect campus and employers with career fairs, registration tickets and understandable skill evidence.'
+              | t
+          }}
+        </p>
+        <a class="text-link" routerLink="/sign-in">{{ 'Connect your campus' | t }} ↗</a>
+      </article>
+    </div>
+  </section>
+  <section id="about" s2wReveal class="landing-section about-story">
+    <div class="about-mark" aria-hidden="true">↗<span>◇</span></div>
+    <div>
+      <p class="eyebrow">{{ 'About Skill2Work' | t }}</p>
+      <h2>{{ 'Potential deserves to be seen.' | t }}</h2>
+      <p>
+        {{
+          'We are building a clearer bridge between learning and work. A place where candidates can tell their story, companies can explain what they need, and universities can connect their communities.'
+            | t
+        }}
+      </p>
+      <p>{{ 'Clear requirements. Meaningful evidence. Room to grow.' | t }}</p>
+      <a class="text-link" routerLink="/technology">{{ 'About the technology' | t }} ↗</a>
+    </div>
+  </section>
+  <section class="landing-final">
+    <p>{{ 'Ready for what comes next?' | t }}</p>
+    <h2>{{ 'Start with your story.' | t }}</h2>
+    <a class="primary" routerLink="/sign-up">{{ 'Get started' | t }} ↗</a>
+  </section>
+</main>
+<footer class="public-footer">
+  <span>{{ brand.name }} · {{ brand.tagline | t }}</span
+  ><a routerLink="/technology">{{ 'About the technology' | t }}</a>
+</footer>

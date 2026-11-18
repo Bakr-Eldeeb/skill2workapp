@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1070" height="220" viewBox="0 0 1070 220" role="img" aria-label="Skill2Work logo">
+ <g transform="translate(24 35) scale(1.14)">
+ <rect x="4" y="4" width="120" height="120" rx="29" fill="#6556E8"/>
+ <path d="M33 55V52C33 38 44 28 59 28H87" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+ <circle cx="93" cy="28" r="8" fill="#FFAF8C"/>
+ <path d="M95 73V76C95 91 84 100 68 100H40" fill="none" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+ <circle cx="34" cy="100" r="8" fill="#16B8AA"/>
+ <path d="M38 66L55 81L87 47" fill="none" stroke="#65F0D8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+ <g font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-weight="800" font-size="88" letter-spacing="-4">
+ <text x="200" y="137"><tspan fill="#111729">Skill</tspan><tspan fill="#6556E8">2</tspan><tspan fill="#111729">Work</tspan></text>
+ </g>
+ <text x="204" y="175" font-family="Plus Jakarta Sans, Inter, Arial, sans-serif" font-size="17" font-weight="700" letter-spacing="3.0" fill="#697287">PROVE SKILLS. FIND WORK.</text>
+</svg>

@@ -1,0 +1,85 @@
+<s2w-header
+  [title]="id ? 'Application journey' : 'Applications'"
+  subtitle="Every conversation has a next step."
+/>
+@if (id) {
+  @if (selected; as a) {
+    <section class="application-hero">
+      <p class="eyebrow">{{ s.company(s.job(a.jobId)!.companyId).name }}</p>
+      <h2>{{ s.job(a.jobId)?.title }}</h2>
+      <p>{{ 'Applied on' | t }} {{ a.date | date: 'mediumDate' }}</p>
+      <a class="text-link" [routerLink]="['/candidate/jobs', a.jobId]"
+        >{{ 'Revisit the role' | t }} ↗</a
+      >
+    </section>
+    <ng-container *ngTemplateOutlet="record; context: { $implicit: a }" />
+  } @else {
+    <s2w-empty
+      text="This application is not available."
+      description="Your own applications and their latest updates are listed in your workspace."
+      ><a class="secondary" routerLink="/candidate/applications">{{
+        'My applications' | t
+      }}</a></s2w-empty
+    >
+  }
+} @else {
+  <p class="applications-intro">
+    {{
+      'A simple place to follow your applications, respond to interviews, and decide what comes next.'
+        | t
+    }}
+  </p>
+  <div class="stack application-list">
+    @for (a of applications; track a.id) {
+      <article class="application-card">
+        <div class="application-summary">
+          <span class="company-monogram" aria-hidden="true">{{
+            s.company(s.job(a.jobId)!.companyId).name.slice(0, 1)
+          }}</span>
+          <div class="application-title">
+            <p class="eyebrow">{{ s.company(s.job(a.jobId)!.companyId).name }}</p>
+            <h2>
+              <a [routerLink]="['/candidate/applications', a.id]">{{ s.job(a.jobId)?.title }}</a>
+            </h2>
+            <p class="muted">{{ 'Applied on' | t }} {{ a.date | date: 'mediumDate' }}</p>
+          </div>
+          <span class="badge status-badge" [attr.data-status]="a.status">{{ a.status | t }}</span>
+        </div>
+        <details class="journey-disclosure" [open]="!!a.interview">
+          <summary>{{ 'Follow this application' | t }} <span aria-hidden="true">↗</span></summary>
+          <ng-container *ngTemplateOutlet="record; context: { $implicit: a }" />
+        </details>
+      </article>
+    } @empty {
+      <s2w-empty
+        text="No applications yet."
+        description="Your first application can be the start of a conversation. Explore roles and apply with the profile you already have."
+        ><a class="primary" routerLink="/candidate/jobs">{{ 'Explore jobs' | t }}</a></s2w-empty
+      >
+    }
+  </div>
+}
+<ng-template #record let-a
+  ><s2w-application-timeline [application]="a" />
+  @if (a.interview; as interview) {
+    <section class="interview invitation-panel">
+      <div class="row">
+        <div>
+          <p class="eyebrow">{{ 'A chance to meet' | t }}</p>
+          <h3>{{ 'Interview' | t }}</h3>
+          <p>{{ interview.date | date: 'medium' }}</p>
+        </div>
+        <span class="badge">{{ interview.response | t }}</span>
+      </div>
+      <label>{{ 'Note (optional)' | t }}<input [(ngModel)]="notes[a.id]" /></label>
+      <div class="actions spaced">
+        <button class="secondary" (click)="respond(a.id, 'Accepted')">
+          {{ 'Accept' | t }}</button><button class="quiet" (click)="respond(a.id, 'Declined')">
+          {{ 'Decline' | t }}</button
+        ><button class="text-link" (click)="respond(a.id, 'Reschedule requested')">
+          {{ 'Request reschedule' | t }}
+        </button>
+      </div>
+    </section>
+  }
+</ng-template>

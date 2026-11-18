@@ -1,0 +1,226 @@
+.career-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(210px, 0.8fr);
+  position: relative;
+  overflow: hidden;
+  padding: 38px 42px;
+  border-radius: 26px;
+  background: var(--aura);
+  border: 1px solid var(--line);
+}
+.hero-copy {
+  z-index: 1;
+}
+.hero-lead {
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 440px;
+  margin: 18px 0 25px;
+}
+.home-readiness {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 26px;
+  font-size: 10px;
+  color: var(--muted);
+}
+.home-readiness a {
+  color: var(--primary-text);
+}
+.career-art {
+  position: relative;
+  min-height: 245px;
+  display: grid;
+  place-items: center;
+}
+.art-orbit {
+  position: absolute;
+  width: 270px;
+  height: 270px;
+  border: 1px solid #6556e81c;
+  border-radius: 50%;
+}
+.art-orbit.two {
+  width: 340px;
+  height: 340px;
+}
+.art-pass {
+  position: relative;
+  width: 192px;
+  padding: 23px 21px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 20px 45px #6556e81c;
+  transform: rotate(-7deg);
+  display: grid;
+  gap: 10px;
+}
+.art-pass img {
+  width: 32px;
+}
+.art-pass span {
+  font-size: 10px;
+  color: var(--muted);
+}
+.art-pass strong {
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: -0.6px;
+}
+.art-pass i {
+  height: 5px;
+  border-radius: 9px;
+  background: var(--soft);
+  width: 85%;
+}
+.art-pass i:nth-last-child(2) {
+  width: 65%;
+  background: #16b8aa45;
+}
+.art-pass i:last-child {
+  width: 45%;
+}
+.art-note {
+  position: absolute;
+  bottom: 18px;
+  inset-inline-end: -10px;
+  background: var(--coral);
+  color: #452615;
+  padding: 10px 16px;
+  box-shadow: var(--shadow);
+  border-radius: 11px;
+  transform: rotate(5deg);
+  font-size: 11px;
+  font-weight: 700;
+}
+.career-home-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 285px;
+  gap: 30px;
+  margin-top: 10px;
+}
+.home-companion {
+  padding-top: 30px;
+  display: grid;
+  align-content: start;
+  gap: 24px;
+}
+.campus-invitation {
+  padding: 25px;
+  border-radius: 22px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.campus-invitation h2 {
+  font-size: 24px;
+  margin-bottom: 22px;
+}
+.event-date-small {
+  display: inline-block;
+  color: var(--primary-text);
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.companion-note {
+  font-size: 17px;
+  font-weight: 700;
+  padding: 0 8px;
+}
+.companion-note span {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+}
+.activity-list {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.activity-item:last-child {
+  border-bottom: 0;
+}
+.activity-item > div {
+  flex: 1;
+}
+.activity-item strong {
+  font-size: 12px;
+}
+.activity-item p {
+  margin: 3px 0 0;
+}
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mint);
+  flex-shrink: 0;
+}
+.section-title p {
+  margin: 6px 0 0;
+}
+.section-title .eyebrow {
+  margin-bottom: 8px !important;
+}
+@media (max-width: 1100px) {
+  .career-home-layout {
+    grid-template-columns: 1fr;
+  }
+  .home-companion {
+    grid-template-columns: 1fr 1fr;
+    padding-top: 0;
+  }
+  .companion-note {
+    grid-column: 1/-1;
+  }
+  .career-hero {
+    padding: 30px;
+  }
+  .art-note {
+    inset-inline-end: 0;
+  }
+}
+@media (max-width: 700px) {
+  .career-hero {
+    padding: 25px;
+    grid-template-columns: 1fr;
+    border-radius: 20px;
+  }
+  .career-art {
+    display: none;
+  }
+  .hero-lead {
+    font-size: 13px;
+  }
+  .home-readiness {
+    gap: 9px;
+    font-size: 9px;
+  }
+  .career-home-layout {
+    gap: 24px;
+  }
+  .home-companion {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .activity-item {
+    padding: 16px;
+    gap: 9px;
+  }
+  .activity-item .badge {
+    max-width: 100px;
+  }
+  .home-jobs {
+    gap: 14px;
+  }
+}

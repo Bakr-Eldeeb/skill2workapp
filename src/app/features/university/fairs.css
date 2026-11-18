@@ -1,0 +1,13 @@
+.editor {
+  max-width: 850px;
+}
+.editor .primary,
+form .primary {
+  justify-self: start;
+}
+.check {
+  margin-top: 14px;
+}
+form label {
+  max-width: 500px;
+}

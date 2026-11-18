@@ -1,0 +1,24 @@
+s2w-header {
+  display: block;
+  margin-top: 20px;
+}
+form .primary {
+  justify-self: start;
+}
+.detail-text {
+  line-height: 1.9;
+}
+
+/* Draw the navigation chevron without depending on a symbol font. */
+.boost-links a::after {
+  content: '';
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  transform: rotate(45deg);
+}
+.boost-links a:dir(rtl)::after {
+  transform: rotate(-135deg);
+}

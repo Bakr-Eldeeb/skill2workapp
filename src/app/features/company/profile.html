@@ -1,0 +1,177 @@
+@if (company; as c) {
+  <s2w-header [title]="university ? 'University profile' : 'Company profile'" [subtitle]="c.name">
+    @if (!readonly && !editing) {
+      <button class="primary" (click)="edit()">✎ {{ 'Edit profile' | t }}</button>
+    }
+  </s2w-header>
+  @if (editing && draft; as d) {
+    <form class="card profile-editor" (ngSubmit)="save()">
+      <s2w-profile-media
+        kind="cover"
+        [value]="d.cover || ''"
+        [alt]="d.name + ' cover'"
+        [editable]="true"
+        (changed)="d.cover = $event"
+      /><s2w-profile-media
+        [value]="d.logo || ''"
+        [alt]="d.name"
+        [editable]="true"
+        (changed)="d.logo = $event"
+      />
+      <p class="muted">
+        {{ 'Images: JPG, PNG or WebP, up to 5 MB. Resized and stored in this browser.' | t }}
+      </p>
+      <div class="fields">
+        <label>{{ 'Name' | t }}<input name="name" [(ngModel)]="d.name" required /></label>
+        @if (!university) {
+          <label>{{ 'Industry' | t }}<input name="industry" [(ngModel)]="d.industry" /></label>
+        }
+        <label
+          >{{ 'Location' | t }}<input name="location" [(ngModel)]="d.location" required /></label
+        ><label
+          >{{ 'Website' | t
+          }}<input
+            name="website"
+            type="url"
+            [(ngModel)]="d.website"
+            placeholder="https://" /></label
+        ><label
+          >{{ 'Contact email' | t
+          }}<input name="contactEmail" type="email" [(ngModel)]="d.contactEmail"
+        /></label>
+        @if (university) {
+          <label
+            >{{ 'Branches / campuses' | t }}<input name="campuses" [(ngModel)]="d.campuses"
+          /></label>
+        }
+        <label class="full"
+          >{{ 'About' | t
+          }}<textarea name="description" [(ngModel)]="d.description" rows="5"></textarea>
+        </label>
+      </div>
+      @if (!university) {
+        <h3>{{ 'Social links' | t }}</h3>
+        @for (link of d.socialLinks; track $index; let i = $index) {
+          <label class="social-editor"
+            >{{ 'Social link' | t
+            }}<input
+              type="url"
+              [name]="'social' + i"
+              [(ngModel)]="d.socialLinks![i]"
+              placeholder="https://"
+            /><button type="button" class="quiet" (click)="d.socialLinks!.splice(i, 1)">
+              {{ 'Remove' | t }}
+            </button></label
+          >
+        }
+        <button class="secondary" type="button" (click)="d.socialLinks!.push('')">
+          + {{ 'Add link' | t }}
+        </button>
+      }
+      @if (error) {
+        <p class="error" role="alert">{{ error | t }}</p>
+      }
+      <div class="actions spaced">
+        <button type="submit" class="primary">{{ 'Save profile' | t }}</button><button
+          class="secondary"
+          type="button"
+          (click)="editing = false"
+        >
+          {{ 'Cancel' | t }}
+        </button>
+      </div>
+    </form>
+  } @else {
+    <article class="profile-hero organization-hero">
+      <s2w-profile-media kind="cover" [value]="c.cover || ''" [alt]="c.name + ' cover'" />
+      <div class="profile-identity">
+        <s2w-profile-media [value]="c.logo || ''" [alt]="c.name" />
+        <div>
+          <p class="eyebrow">{{ (university ? 'University' : c.industry || 'Company') | t }}</p>
+          <h2>{{ c.name }}</h2>
+          <p>{{ c.location }}</p>
+          @if (university) {
+            <p class="muted">{{ c.campuses }}</p>
+          }
+        </div>
+        @if (readonly) {
+          <button class="primary" (click)="explore()">{{ 'Explore jobs' | t }} ↗</button>
+        }
+      </div>
+    </article>
+    <div class="profile-layout">
+      <div class="stack">
+        <section class="card">
+          <h2>{{ (university ? 'About our university' : 'About company') | t }}</h2>
+          <p class="detail-text">{{ c.description }}</p>
+          @if (university) {
+            <h3>{{ 'Branches / campuses' | t }}</h3>
+            <p>{{ c.campuses }}</p>
+          }
+        </section>
+        <section id="organization-openings" tabindex="-1" class="card">
+          <h2>{{ (university ? 'Upcoming career fairs' : 'Open jobs') | t }}</h2>
+          @if (university) {
+            @for (f of fairs; track f.id) {
+              <article class="career-entry">
+                <p class="eyebrow">{{ f.date | date: 'mediumDate' }}</p>
+                <h3>{{ f.name }}</h3>
+                <p>{{ f.location }}</p>
+                <a class="text-link" [routerLink]="['/university/fairs', f.id]"
+                  >{{ 'View fair' | t }} ↗</a
+                >
+              </article>
+            } @empty {
+              <s2w-empty text="No upcoming fairs"
+                ><a class="secondary" routerLink="/university/fairs/new">{{
+                  'Create fair' | t
+                }}</a></s2w-empty
+              >
+            }
+          } @else {
+            <div class="grid">
+              @for (j of jobs; track j.id) {
+                @if (readonly) {
+                  <s2w-job-card [job]="j" [candidate]="s.candidate()" />
+                } @else {
+                  <article class="career-entry">
+                    <h3>{{ j.title }}</h3>
+                    <p>{{ j.location }} · {{ j.mode }}</p>
+                    <a class="text-link" [routerLink]="['/company/jobs', j.id, 'edit']"
+                      >{{ 'Edit job' | t }} ↗</a
+                    >
+                  </article>
+                }
+              } @empty {
+                <s2w-empty text="No published jobs yet.">
+                  @if (!readonly) {
+                    <a class="secondary" routerLink="/company/jobs/new">{{ 'Create job' | t }}</a>
+                  }
+                </s2w-empty>
+              }
+            </div>
+          }
+        </section>
+      </div>
+      <aside class="card contact-card">
+        <h2>{{ 'Contact' | t }}</h2>
+        @if (c.contactEmail) {
+          <a [href]="'mailto:' + c.contactEmail">{{ c.contactEmail }}</a>
+        }
+        @if (safeUrl(c.website); as href) {
+          <a [href]="href" target="_blank" rel="noopener noreferrer">{{ 'Website' | t }} ↗</a>
+        }
+        @if (!university) {
+          <h3>{{ 'Social links' | t }}</h3>
+          @for (link of c.socialLinks; track $index) {
+            @if (safeUrl(link); as href) {
+              <a [href]="href" target="_blank" rel="noopener noreferrer">{{ link }}</a>
+            }
+          }
+        }
+      </aside>
+    </div>
+  }
+} @else {
+  <s2w-header title="Company profile" /><s2w-empty text="Profile unavailable" />
+}

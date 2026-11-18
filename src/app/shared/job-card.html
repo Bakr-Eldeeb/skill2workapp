@@ -1,0 +1,39 @@
+<article class="job-card">
+  <div class="job-top">
+    <span class="company-monogram">{{ s.company(job.companyId).name.slice(0, 1) }}</span>
+    <div>
+      <a class="job-company-name" [routerLink]="['/candidate/companies', job.companyId]">{{
+        s.company(job.companyId).name
+      }}</a>
+      <h3>
+        <a
+          [routerLink]="['/candidate/jobs', job.id]"
+          [queryParams]="fairId ? { fair: fairId } : {}"
+          >{{ job.title }}</a
+        >
+      </h3>
+    </div>
+    @if (candidate) {
+      <div class="job-score">
+        <s2w-score [value]="s.score(candidate, job)" [coverage]="s.coverage(candidate, job)" />
+      </div>
+    }
+  </div>
+  <div class="chips">
+    <span>{{ job.location }}</span><span>{{ job.mode | t }}</span
+    ><span>{{ job.type | t }}</span>
+  </div>
+  <div class="job-bottom">
+    <div class="chips">
+      @for (skill of job.skills.slice(0, 3); track skill.name) {
+        <span class="skill-chip">{{ skill.name }}</span>
+      }
+    </div>
+    <a
+      class="text-link"
+      [routerLink]="['/candidate/jobs', job.id]"
+      [queryParams]="fairId ? { fair: fairId } : {}"
+      >{{ 'View job' | t }} <span aria-hidden="true">↗</span></a
+    >
+  </div>
+</article>

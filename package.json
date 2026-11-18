@@ -1,0 +1,50 @@
+{
+  "name": "skill2work-angular",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ng serve --host 127.0.0.1 --port 4200",
+    "build": "ng build",
+    "test:domain": "node --import tsx --test tests/domain.test.ts",
+    "test:e2e": "playwright test",
+    "test:dom": "ng build && node --import tsx --test tests/dom.test.mjs",
+    "test:server": "node scripts/verify-server.mjs",
+    "format": "prettier --write src tests scripts *.json *.ts *.md",
+    "format:check": "prettier --check src tests scripts *.json *.ts *.md",
+    "test:ux": "node --import tsx --test tests/final-ux.test.mjs",
+    "build:pages": "node scripts/build-pages.mjs",
+    "test:pages": "node --import tsx --test tests/pages.test.mjs",
+    "test:source": "node --test tests/source.test.mjs",
+    "test:v3": "ng build && node --import tsx --test tests/v3.test.mjs",
+    "test:v4": "node --import tsx --test tests/v4.test.mjs tests/media.test.mjs"
+  },
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || ^26.0.0"
+  },
+  "dependencies": {
+    "@angular/common": "^22.2.0",
+    "@angular/compiler": "^22.2.0",
+    "@angular/core": "^22.2.0",
+    "@angular/forms": "^22.2.0",
+    "@angular/platform-browser": "^22.2.0",
+    "@angular/router": "^22.2.0",
+    "@fontsource/plus-jakarta-sans": "^5.2.0",
+    "@fontsource/tajawal": "^5.2.0",
+    "qrcode": "^1.5.4",
+    "rxjs": "~7.8.2",
+    "tslib": "^2.8.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.2.0",
+    "@angular/cli": "^22.2.0",
+    "@angular/compiler-cli": "^22.2.0",
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.0.0",
+    "@types/qrcode": "^1.5.6",
+    "happy-dom": "^21.0.4",
+    "jsqr": "^1.4.0",
+    "prettier": "^3.10.1",
+    "tsx": "^4.20.0",
+    "typescript": "~6.0.0"
+  }
+}

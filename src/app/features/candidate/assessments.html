@@ -1,0 +1,121 @@
+<s2w-header title="Assessments" subtitle="Practice assessment" />
+<div class="notice">
+  {{ 'Simulated evidence only; no real AI verification.' | t }}
+  {{ 'Questions, scores and feedback are deterministic UI fixtures, not AI grading.' | t }}
+</div>
+@if (attempt(); as a) {
+  <article class="card assessment-live">
+    <div class="row">
+      <span class="badge">{{ question?.skill }} · {{ a.difficulty | t }}</span
+      ><strong class="timer" aria-live="off">{{ seconds() }}s</strong>
+    </div>
+    <p class="muted spaced">{{ 'Question' | t }} {{ a.index + 1 }} / {{ a.questions.length }}</p>
+    <div class="progress"><i [style.width.%]="(100 * (a.index + 1)) / a.questions.length"></i></div>
+    @if (evaluating()) {
+      <s2w-loading />
+    } @else if (failed) {
+      <h2>{{ 'Unable to save results.' | t }}</h2>
+      <p class="error" role="alert">{{ error | t }}</p>
+      <button class="primary" (click)="finish()">{{ 'Retry' | t }}</button>
+    } @else {
+      <h2 class="question">{{ question?.prompt }}</h2>
+      <form (ngSubmit)="next()">
+        @if (question?.type === 'mcq') {
+          <fieldset>
+            <legend class="muted">{{ 'Select one answer' | t }}</legend>
+            @for (option of question.options; track option) {
+              <label class="option"
+                ><input
+                  type="radio"
+                  name="answer"
+                  [value]="option"
+                  [ngModel]="answer"
+                  (ngModelChange)="updateAnswer($event)"
+                />{{ option }}</label
+              >
+            }
+          </fieldset>
+        } @else {
+          <label
+            >{{ 'Answer' | t
+            }}<textarea
+              name="answer"
+              [ngModel]="answer"
+              (ngModelChange)="updateAnswer($event)"
+              rows="7"
+              required
+            ></textarea>
+          </label>
+        }
+        @if (error) {
+          <p class="error" role="alert">{{ error | t }}</p>
+        }
+        <div class="row">
+          <button class="quiet" type="button" (click)="cancel()">
+            {{ 'Cancel assessment' | t }}</button><button class="primary" type="submit">
+            {{ (a.index === a.questions.length - 1 ? 'Submit assessment' : 'Next question') | t }} →
+          </button>
+        </div>
+      </form>
+    }
+  </article>
+} @else {
+  <div class="two-column spaced">
+    <form class="card" (ngSubmit)="start()">
+      <h2>{{ 'Assessment overview' | t }}</h2>
+      <p class="muted">
+        {{ 'Text only. One question at a time, with 120 seconds per question.' | t }}
+      </p>
+      <label
+        >{{ 'Select skill' | t
+        }}<select name="target" [(ngModel)]="target">
+          <option value="">
+            {{ 'Full assessment' | t }} · {{ selectedSkills.length }} {{ 'My skills' | t }}
+          </option>
+          @for (skill of c.skills; track skill.name) {
+            <option [value]="skill.name">{{ skill.name }}</option>
+          }
+        </select></label
+      >
+      @if (!target) {
+        <label
+          >{{ 'Full assessment mode' | t }}
+          <select name="fullMode" [(ngModel)]="fullMode">
+            <option value="new">{{ 'Assess unverified skills' | t }}</option>
+            <option value="all">{{ 'Reassess eligible skills' | t }}</option>
+          </select>
+        </label>
+      }
+      <label
+        >{{ 'Difficulty' | t
+        }}<select name="difficulty" [(ngModel)]="difficulty">
+          @for (level of ['Easy', 'Medium', 'Hard']; track level) {
+            <option [value]="level">{{ level | t }}</option>
+          }
+        </select></label
+      >
+      <p class="muted">
+        {{ count() }} {{ 'questions' | t }} ·
+        {{ 'A 24-hour cooldown applies to each evaluated skill.' | t }}
+      </p>
+      @if (error) {
+        <p class="error" role="alert">{{ error | t }}</p>
+      }
+      <button class="primary">{{ 'Start assessment' | t }} ↗</button
+      ><a class="text-link" routerLink="/candidate/results">{{ 'View results' | t }}</a>
+    </form>
+    <aside class="card aura">
+      <h3>{{ 'My skills' | t }}</h3>
+      @for (skill of c.skills; track skill.name) {
+        <div class="list-row">
+          <span class="grow">{{ skill.name }}</span><span class="badge">{{
+            (skill.score === undefined ? 'Claimed' : 'Assessed') | t
+          }}</span>
+        </div>
+      } @empty {
+        <p>{{ 'Start with a claimed skill.' | t }}</p>
+        <a class="text-link" routerLink="/candidate/skills">{{ 'Add skill' | t }} ↗</a>
+      }
+    </aside>
+  </div>
+}

@@ -1,0 +1,16 @@
+form {
+  max-width: 1050px;
+}
+.validation p {
+  margin-bottom: 4px;
+}
+.divider {
+  margin: 0;
+}
+.spaced {
+  margin-top: 14px;
+}
+.skill-row .quiet {
+  height: 40px;
+  font-size: 22px;
+}

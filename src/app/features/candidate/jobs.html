@@ -1,0 +1,181 @@
+@if (!id) {
+  <s2w-header title="Find jobs" subtitle="Your next opportunity starts here." />
+  <div class="filters">
+    <label class="search"
+      >{{ 'Search jobs' | t
+      }}<input [(ngModel)]="search" placeholder="Angular, developer…" /></label
+    ><label
+      >{{ 'Location' | t
+      }}<select [(ngModel)]="location">
+        <option value="">{{ 'All locations' | t }}</option>
+        @for (l of locations; track l) {
+          <option>{{ l }}</option>
+        }
+      </select></label
+    ><label
+      >{{ 'Work mode' | t
+      }}<select [(ngModel)]="mode">
+        <option value="">{{ 'All modes' | t }}</option>
+        @for (m of ['Remote', 'Hybrid', 'On-site']; track m) {
+          <option [value]="m">{{ m | t }}</option>
+        }
+      </select></label
+    ><label
+      >{{ 'Job type' | t
+      }}<select [(ngModel)]="type">
+        <option value="">{{ 'All types' | t }}</option>
+        @for (t of ['Full-time', 'Part-time', 'Internship']; track t) {
+          <option [value]="t">{{ t | t }}</option>
+        }
+      </select></label
+    ><label
+      >{{ 'My skills' | t
+      }}<select [(ngModel)]="skill">
+        <option value="">{{ 'All skills' | t }}</option>
+        @for (s of allSkills; track s) {
+          <option>{{ s }}</option>
+        }
+      </select></label
+    >
+  </div>
+  <div class="row">
+    <p class="muted">{{ jobs.length }} {{ 'Jobs' | t }}</p>
+    <button class="text-link" (click)="reset()">{{ 'Reset filters' | t }}</button>
+  </div>
+  <div class="grid">
+    @for (j of jobs; track j.id) {
+      <s2w-job-card [job]="j" [candidate]="c" />
+    } @empty {
+      <s2w-empty
+        [text]="hasFilters ? 'No matching results.' : 'No open roles yet.'"
+        [description]="
+          hasFilters
+            ? 'Try fewer filters or a broader search. We will never invent a match.'
+            : 'No roles are published right now. Keep your profile ready for the next opening.'
+        "
+      >
+        @if (hasFilters) {
+          <button class="secondary" (click)="reset()">{{ 'Clear filters' | t }}</button>
+        } @else {
+          <a class="secondary" routerLink="/candidate/profile">{{ 'Review your profile' | t }}</a>
+        }
+      </s2w-empty>
+    }
+  </div>
+  <section class="career-boost">
+    <img
+      src="assets/career-desk.svg"
+      alt="Career workspace with a laptop, portfolio and magnifying glass"
+    />
+    <div>
+      <p class="eyebrow">{{ 'Make your next move' | t }}</p>
+      <h2>{{ 'A little preparation. A world of possibility.' | t }}</h2>
+      <p>
+        {{
+          'Bring your story, your work and your skills together. Give your next opportunity a clearer picture of you.'
+            | t
+        }}
+      </p>
+      <div class="boost-links">
+        <a routerLink="/candidate/profile"
+          >01
+          <span
+            ><strong>{{ 'Strengthen your profile' | t }}</strong
+            ><small>{{ 'Tell your story' | t }}</small></span
+          > </a
+        ><a routerLink="/candidate/profile" fragment="projects"
+          >02
+          <span
+            ><strong>{{ 'Showcase your projects' | t }}</strong
+            ><small>{{ 'Let your work speak' | t }}</small></span
+          > </a
+        ><a routerLink="/candidate/skills"
+          >03
+          <span
+            ><strong>{{ 'Prove your skills' | t }}</strong
+            ><small>{{ 'Explore optional practice assessment' | t }}</small></span
+          >
+        </a>
+      </div>
+    </div>
+  </section>
+} @else if (job && job.published) {
+  <s2w-header
+    [title]="job.title"
+    [eyebrow]="s.company(job.companyId).name"
+    [subtitle]="job.location + ' · ' + (job.mode | t) + ' · ' + (job.type | t)"
+  >
+    @if (!applying) {
+      <a
+        class="primary"
+        [routerLink]="['/candidate/jobs', job.id, 'apply']"
+        [queryParams]="fairId ? { fair: fairId } : {}"
+        >{{ (applied ? 'Already applied' : 'Apply now') | t }} ↗</a
+      >
+    }
+  </s2w-header>
+  <a class="company-context-link" [routerLink]="['/candidate/companies', job.companyId]"
+    >{{ 'Meet the team at' | t }} {{ s.company(job.companyId).name }}
+    <span aria-hidden="true">↗</span></a
+  >
+  @if (applying) {
+    <div class="two-column">
+      <form class="card" (ngSubmit)="apply()">
+        <h2>{{ 'Apply' | t }}</h2>
+        <p>{{ 'Your profile is used for this application.' | t }}</p>
+        <p class="muted">{{ c.name }} · {{ c.location }} · {{ c.track }}</p>
+        <p class="notice">{{ 'No assessment is required to apply.' | t }}</p>
+        @if (!applied) {
+          <label
+            >{{ 'Cover letter (optional)' | t
+            }}<textarea name="letter" [(ngModel)]="letter"></textarea></label
+          ><button class="primary" type="submit">{{ 'Submit application' | t }}</button>
+        } @else {
+          <div class="success" role="status">
+            {{ (success ? 'Application submitted.' : 'Already applied') | t }}
+          </div>
+          <a class="secondary" routerLink="/candidate/applications">{{ 'Applications' | t }}</a>
+        }
+        @if (error) {
+          <p class="error" role="alert">{{ error | t }}</p>
+        }
+      </form>
+      <aside class="card aura">
+        <h3>{{ job.title }}</h3>
+        <p>{{ s.company(job.companyId).name }}</p>
+        <s2w-score [value]="s.score(c, job)" [coverage]="s.coverage(c, job)" />
+      </aside>
+    </div>
+  } @else {
+    <div class="two-column">
+      <article class="card">
+        <h2>{{ 'Description' | t }}</h2>
+        <p class="detail-text">{{ job.description }}</p>
+        <div class="chips">
+          <span>{{ job.experience }}</span>
+          @if (job.salary) {
+            <span>{{ job.salary }}</span>
+          }
+        </div>
+      </article>
+      <aside class="job-human-note">
+        <span class="note-symbol" aria-hidden="true">↗</span>
+        <h3>{{ 'You can start a conversation.' | t }}</h3>
+        <p>
+          {{
+            'Your profile and an optional cover letter are enough to apply. Assessment is always optional.'
+              | t
+          }}
+        </p>
+        <p class="muted">
+          {{ 'Your skills can grow. The job details help you decide where to begin.' | t }}
+        </p>
+      </aside>
+    </div>
+    <s2w-match-explanation [candidate]="c" [job]="job" />
+  }
+} @else {
+  <s2w-empty text="Page not found"
+    ><a class="text-link" routerLink="/candidate/jobs">{{ 'Back to jobs' | t }}</a></s2w-empty
+  >
+}
